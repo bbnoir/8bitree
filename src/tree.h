@@ -1,16 +1,22 @@
 #include <iostream>
 #include <vector>
+#include <set>
 
 using namespace std;
 
 class Tree
 {
 private:
-    vector<int> array;
+    vector<int> treeAry;
     int dim;
-    // void modify();
-    // bool checkKraft();
+    const int maxDim = 32;
+    set<int> leafSet;
+    void modify(int times = 1);
+    bool checkKraft();
+    bool split(const int &idx);
+
 public:
     Tree(int numLeaf);
-    friend ostream& operator<<(ostream& os, const Tree& tree);
+    friend ostream &operator<<(ostream &os, const Tree &tree);
+    void testModify(int n);
 };

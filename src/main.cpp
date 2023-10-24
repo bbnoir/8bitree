@@ -8,12 +8,13 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    int numLeaf = 256;
-    Tree *tree = new Tree(numLeaf);
-    cout << *tree << endl;
-
-    string filePath = "/home/U114ysyang/project/8bitree/data/ALBERT/ALBERT_word_emb.txt";
+    string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
     DataLoader *DL = new DataLoader(filePath);
+
+    int numLeaf = 256;
+
+    Tree *tree = new Tree(numLeaf);
+    tree->testModify(100000);
 
     return 0;
 }

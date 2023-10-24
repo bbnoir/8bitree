@@ -5,48 +5,77 @@
 
 using namespace std;
 
-DataLoader::DataLoader()
+short findMin(unordered_map<short, int> freqMap);
+
+short findMax(unordered_map<short, int> freqMap);
+
+DataLoader::DataLoader() : numLines(0), numElements(128), numInts(256), Max(0), Min(0)
 {
-    numLines = 0;
-    numElements = 128;
+    dataAry = vector<vector<short>>(numLines, vector<short>(numElements, 0));
 }
 
-DataLoader::DataLoader(string filePath)
+DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts(0), Max(0), Min(0)
 {
-    numLines = 0;
-    numElements = 0;
     ifstream inFile;
     inFile.open(filePath.c_str());
     if (!inFile)
     {
         cout << "Error: file not found" << endl;
-        return;
+        exit(1);
     }
     string line;
-    int MAX = 0;
-    int MIN = 0;
+    vector<short> lineAry;
+    short num;
     while (getline(inFile, line))
     {
+        lineAry.clear();
         numLines++;
-        vector<int> lineAry;
         stringstream ss(line);
-        int num;
         while (ss >> num)
         {
             lineAry.push_back(num);
             freqMap[num]++;
-            numElements++;
-            MAX = max(MAX, num);
-            MIN = min(MIN, num);
         }
         dataAry.push_back(lineAry);
     }
-    numElements /= numLines;
     inFile.close();
-    for (int i = -128; i < 128; i++)
+    for (short i = -128; i <= 127; i++)
     {
-        cout << i << " " << freqMap[i] << endl;
+        if (freqMap[i] > 0)
+        {
+            numInts++;
+        }
     }
-    cout << "MAX: " << MAX << endl;
-    cout << "MIN: " << MIN << endl;
+    Max = findMax(freqMap);
+    Min = findMin(freqMap);
+    cout << "numInts: " << numInts << endl;
+}
+
+short findMin(unordered_map<short, int> freqMap)
+{
+    for (short i = -128; i <= 127; i++)
+    {
+        if (freqMap[i] > 0)
+        {
+            return i;
+        }
+    }
+    return 127;
+}
+
+short findMax(unordered_map<short, int> freqMap)
+{
+    for (short i = 127; i >= -128; i--)
+    {
+        if (freqMap[i] > 0)
+        {
+            return i;
+        }
+    }
+    return -128;
+}
+
+int DataLoader::getNumInts()
+{
+    return numInts;
 }

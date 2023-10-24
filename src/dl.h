@@ -7,12 +7,16 @@ using namespace std;
 class DataLoader
 {
 private:
-    vector<vector<int>> dataAry;
+    vector<vector<short>> dataAry;
     int numLines;
     int numElements; // number of elements per line
-    unordered_map<int, int> freqMap;
+    int numInts;     // number of integers occured in the data
+    short Max;
+    short Min;
+    unordered_map<short, int> freqMap;
 
 public:
     DataLoader();
     DataLoader(string filePath);
+    int getNumInts();
 };
