@@ -2,18 +2,20 @@
 #include <vector>
 #include <unordered_map>
 
+typedef char int8;
+
 using namespace std;
 
 class DataLoader
 {
 private:
-    vector<vector<short>> dataAry;
+    vector<vector<int8>> dataAry;
     int numLines;
     int numElements; // number of elements per line
     int numInts;     // number of integers occured in the data
-    short Max;
-    short Min;
-    unordered_map<short, int> freqMap;
+    int8 Max;
+    int8 Min;
+    vector<int> freqMap;
 
 public:
     DataLoader();

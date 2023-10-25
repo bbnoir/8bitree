@@ -5,17 +5,19 @@
 
 using namespace std;
 
-short findMin(unordered_map<short, int> freqMap);
+int8 findMin(vector<int> freqMap);
 
-short findMax(unordered_map<short, int> freqMap);
+int8 findMax(vector<int> freqMap);
 
 DataLoader::DataLoader() : numLines(0), numElements(128), numInts(256), Max(0), Min(0)
 {
-    dataAry = vector<vector<short>>(numLines, vector<short>(numElements, 0));
+    dataAry = vector<vector<int8>>(numLines, vector<int8>(numElements, 0));
+    freqMap = vector<int>(256, 0);
 }
 
 DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts(0), Max(0), Min(0)
 {
+    freqMap = vector<int>(256, 0);
     ifstream inFile;
     inFile.open(filePath.c_str());
     if (!inFile)
@@ -24,8 +26,8 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
         exit(1);
     }
     string line;
-    vector<short> lineAry;
-    short num;
+    vector<int8> lineAry;
+    int8 num;
     while (getline(inFile, line))
     {
         lineAry.clear();
@@ -33,13 +35,13 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
         stringstream ss(line);
         while (ss >> num)
         {
-            lineAry.push_back(num);
-            freqMap[num]++;
+            lineAry.push_back(int8(num));
+            freqMap[int8(num)]++;
         }
         dataAry.push_back(lineAry);
     }
     inFile.close();
-    for (short i = -128; i <= 127; i++)
+    for (int i = 0; i < 256; i++)
     {
         if (freqMap[i] > 0)
         {
@@ -51,25 +53,25 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
     cout << "numInts: " << numInts << endl;
 }
 
-short findMin(unordered_map<short, int> freqMap)
+int8 findMin(vector<int> freqMap)
 {
-    for (short i = -128; i <= 127; i++)
+    for (int i = 0; i < 256; i++)
     {
         if (freqMap[i] > 0)
         {
-            return i;
+            return i - 128;
         }
     }
     return 127;
 }
 
-short findMax(unordered_map<short, int> freqMap)
+int8 findMax(vector<int> freqMap)
 {
-    for (short i = 127; i >= -128; i--)
+    for (int i = 255; i >= 0; i--)
     {
         if (freqMap[i] > 0)
         {
-            return i;
+            return i - 128;
         }
     }
     return -128;
