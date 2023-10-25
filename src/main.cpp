@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     int numLeaf = 256;
 
     Tree *tree = new Tree(numLeaf);
-    tree->testModify(100000);
+    // tree->testModify(100000);
 
     return 0;
 }

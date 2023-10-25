@@ -27,7 +27,7 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
     }
     string line;
     vector<int8> lineAry;
-    int8 num;
+    int num;
     while (getline(inFile, line))
     {
         lineAry.clear();
@@ -35,8 +35,12 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
         stringstream ss(line);
         while (ss >> num)
         {
-            lineAry.push_back(int8(num));
-            freqMap[int8(num)]++;
+            int8 upper4bits = (num >> 4) & 0x0F;
+            int8 lower4bits = num & 0x0F;
+            lineAry.push_back(upper4bits);
+            lineAry.push_back(lower4bits);
+            freqMap[upper4bits]++;
+            freqMap[lower4bits]++;
         }
         dataAry.push_back(lineAry);
     }
@@ -50,7 +54,7 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
     }
     Max = findMax(freqMap);
     Min = findMin(freqMap);
-    cout << "numInts: " << numInts << endl;
+    // cout << "numInts: " << numInts << endl;
 }
 
 int8 findMin(vector<int> freqMap)
