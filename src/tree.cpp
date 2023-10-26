@@ -95,7 +95,7 @@ Tree *Tree::modify(int times)
                 break;
             }
         }
-        newTree->checkKraft();
+        // newTree->checkKraft();
     }
     return newTree;
 }
@@ -103,14 +103,31 @@ Tree *Tree::modify(int times)
 void Tree::testModify(int times)
 {
     Tree *tree = new Tree(256);
-    cout << *tree << endl;
-    while (times--)
+    cout << "iter: " << 0 << " tree: " << *tree << endl;
+    for (int i = 1; i <= times; i++)
     {
 
-        int m = rand() % 6 + 1;
+        // int m = rand() % 6 + 1;
+        int m = 1;
         Tree *newTree = tree->modify(m);
         delete tree;
         tree = newTree;
-        cout << *tree << endl;
+        cout << "iter: " << i << " tree: " << *tree << endl;
     }
+}
+
+int Tree::getMinWidth(DataLoader *dl)
+{
+    int minWidth = 0;
+    // for (int i = 0; i < dl->getNumLines(); i++)
+    // {
+    //     ;
+    // }
+    minWidth = (rand() % 200) / 100.0 * dl->getNumElements() * 8;
+    return minWidth;
+}
+
+Tree *Tree::getHuffman(DataLoader *dl)
+{
+    return this;
 }

@@ -3,39 +3,50 @@
 #include "tree.h"
 #include "dl.h"
 #include "sa.h"
+#include <cmath>
 
 using namespace std;
 
-// void SimulatedAnnealing()
-// {
-//     string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
-//     int numLeaf = 256;
-//     DataLoader *dl = new DataLoader(filePath);
-//     Tree *tree = new Tree(numLeaf);
+void SimulatedAnnealing()
+{
+    string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
+    int numLeaf = 256;
+    DataLoader *dl = new DataLoader(filePath);
+    Tree *tree = new Tree(numLeaf);
+    tree->getHuffman(dl);
 
-//     const int maxIter = 100000;
-//     int iter = 0;
-//     int T = 1000;
-//     int Rt = 0.99;
+    const int maxIter = 10;
+    int iter = 0;
+    double T = 1000;
+    double Rt = 0.99;
 
-//     int energy = tree->getEnergy(dl);
-//     while (iter++ < maxIter)
-//     {
-//         Tree *newTree = tree->getNeighbor();
-//         int newEnergy = newTree->getEnergy(dl);
-//         if (newEnergy < energy || rand() % 10000 < exp((energy - newEnergy) / T) * 10000)
-//         {
-//             delete tree;
-//             tree = newTree;
-//             energy = newEnergy;
-//         }
-//         else
-//         {
-//             delete newTree;
-//         }
-//         T *= Rt;
-//     }
-// }
+    int curMinWidth = tree->getMinWidth(dl);
+    Tree *newTree = NULL;
+    int newMinWidth = 0;
+    while (iter++ < maxIter)
+    {
+        cout << "iter: " << iter << " T: " << T << endl;
+        cout << "Current tree: " << *tree << endl;
+        cout << "Current minWidth: " << curMinWidth << endl;
+        newTree = tree->modify();
+        newMinWidth = newTree->getMinWidth(dl);
+        cout << "New tree: " << *newTree << endl;
+        cout << "New minWidth: " << newMinWidth << endl;
+        if (newMinWidth < curMinWidth || rand() % 10000 < exp((curMinWidth - newMinWidth) / T) * 10000)
+        {
+            cout << "Accept new tree" << endl;
+            delete tree;
+            tree = newTree;
+            curMinWidth = newMinWidth;
+        }
+        else
+        {
+            cout << "Preserve current tree" << endl;
+            delete newTree;
+        }
+        T *= Rt;
+    }
+}
 
 // struct Config
 // {
@@ -49,10 +60,10 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
-    int numLeaf = 256;
+    // string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
+    // int numLeaf = 256;
 
-    Tree::testModify(20);
+    Tree::testModify(10000);
 
     // SimulatedAnnealing();
 
