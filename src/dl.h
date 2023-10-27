@@ -1,3 +1,6 @@
+#ifndef DL_H
+#define DL_H
+#include "tree.h"
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -21,4 +24,8 @@ public:
     DataLoader();
     DataLoader(string filePath);
     int getNumInts();
+    int getNumLines();
+    int getNumElements();
 };
+
+#endif

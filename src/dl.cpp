@@ -50,7 +50,7 @@ DataLoader::DataLoader(string filePath) : numLines(0), numElements(128), numInts
     }
     Max = findMax(freqMap);
     Min = findMin(freqMap);
-    cout << "numInts: " << numInts << endl;
+    numElements = dataAry[0].size();
 }
 
 int8 findMin(vector<int> freqMap)
@@ -80,4 +80,14 @@ int8 findMax(vector<int> freqMap)
 int DataLoader::getNumInts()
 {
     return numInts;
+}
+
+int DataLoader::getNumLines()
+{
+    return numLines;
+}
+
+int DataLoader::getNumElements()
+{
+    return numElements;
 }

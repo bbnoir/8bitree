@@ -25,48 +25,9 @@ bool Tree::checkKraft()
     if (sum != 1)
     {
         cout << "Error: Check Kraft's sum: " << sum << " != 1" << endl;
+        exit(1);
     }
     return sum == 1;
-}
-
-bool Tree::split(const int &idx)
-{
-    short mode = rand() % 2;
-    switch (mode)
-    {
-    case 0:
-        if (treeAry[idx] < 2)
-            return false;
-        treeAry[idx] -= 2;
-        treeAry[idx - 1] += 1;
-        if (treeAry[idx] == 0)
-            leafSet.erase(idx);
-        leafSet.insert(idx - 1);
-        break;
-    case 1:
-        if (treeAry[idx] < 1 || idx + 2 >= maxDim)
-            return false;
-        if (idx == dim - 1)
-        {
-            dim += 2;
-            treeAry.resize(dim + 2);
-        }
-        treeAry[idx] -= 1;
-        treeAry[idx + 1] += 2;
-        if (treeAry[idx] == 0)
-            leafSet.erase(idx);
-        leafSet.insert(idx + 1);
-        break;
-    default:
-        break;
-    }
-    // if (!checkKraft())
-    // {
-    //     cout << "treeAry: " << *this << endl;
-    //     cout << "Kraft inequality violated" << endl;
-    //     exit(1);
-    // }
-    return true;
 }
 
 template <typename T>
@@ -78,20 +39,95 @@ T randIdx(set<T> const &s)
     return *it;
 }
 
-void Tree::modify(int times)
+Tree *Tree::modify(int times)
 {
-    vector<int> oriAry = treeAry;
-    int idx;
+    Tree *newTree = new Tree(*this);
     while (times--)
-        while (!split(randIdx(leafSet)))
-            ;
+    {
+        bool mod_success = false;
+        while (!mod_success)
+        {
+            int mode = rand() % 2;
+            int idx = randIdx(newTree->leafSet);
+            switch (mode)
+            {
+            case 0: // [+1, -3, +2]
+                if (newTree->treeAry[idx] >= 3 && idx + 1 < newTree->maxDim)
+                {
+                    if (idx == newTree->dim - 1)
+                    {
+                        newTree->dim += 1;
+                        newTree->treeAry.resize(newTree->dim + 1);
+                    }
+                    newTree->treeAry[idx] -= 3;
+                    newTree->treeAry[idx + 1] += 2;
+                    newTree->treeAry[idx - 1] += 1;
+                    if (newTree->treeAry[idx] == 0)
+                        newTree->leafSet.erase(idx);
+                    newTree->leafSet.insert(idx - 1);
+                    newTree->leafSet.insert(idx + 1);
+                    mod_success = true;
+                }
+                break;
+            case 1: // [+1, -2, -1, +2]
+                if (newTree->treeAry[idx] >= 1 && newTree->treeAry[idx - 1] >= 2 && idx + 1 < newTree->maxDim)
+                {
+                    if (idx == newTree->dim - 1)
+                    {
+                        newTree->dim += 1;
+                        newTree->treeAry.resize(newTree->dim + 1);
+                    }
+                    newTree->treeAry[idx + 1] += 2;
+                    newTree->treeAry[idx] -= 1;
+                    newTree->treeAry[idx - 1] -= 2;
+                    newTree->treeAry[idx - 2] += 1;
+                    if (newTree->treeAry[idx] == 0)
+                        newTree->leafSet.erase(idx);
+                    if (newTree->treeAry[idx - 1] == 0)
+                        newTree->leafSet.erase(idx - 1);
+                    newTree->leafSet.insert(idx + 1);
+                    newTree->leafSet.insert(idx - 2);
+                    mod_success = true;
+                }
+                break;
+            default:
+                cout << "Error: Invalid mode" << endl;
+                break;
+            }
+        }
+        // newTree->checkKraft();
+    }
+    return newTree;
 }
 
-void Tree::testModify(int n)
+void Tree::testModify(int times)
 {
-    while (n--)
+    Tree *tree = new Tree(256);
+    cout << "iter: " << 0 << " tree: " << *tree << endl;
+    for (int i = 1; i <= times; i++)
     {
-        modify(1);
-        cout << *this << endl;
+
+        // int m = rand() % 6 + 1;
+        int m = 1;
+        Tree *newTree = tree->modify(m);
+        delete tree;
+        tree = newTree;
+        cout << "iter: " << i << " tree: " << *tree << endl;
     }
+}
+
+int Tree::getMinWidth(DataLoader *dl)
+{
+    int minWidth = 0;
+    // for (int i = 0; i < dl->getNumLines(); i++)
+    // {
+    //     ;
+    // }
+    minWidth = (rand() % 200) / 100.0 * dl->getNumElements() * 8;
+    return minWidth;
+}
+
+Tree *Tree::getHuffman(DataLoader *dl)
+{
+    return this;
 }
