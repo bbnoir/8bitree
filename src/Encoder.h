@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
-#define SYMBOL_MIN -128
+#include "Constants.h"
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-#include "encoder.h"
+#include "Encoder.h"
 #include <algorithm>
 #include <iostream>
 #include <bitset>
@@ -19,17 +19,17 @@ vector<pair<int, int>> sort(vector<int> M)
 {
     vector<pair<int, int>> A;
     for (int i = 0; i < M.size(); i++)
-        A.push_back(make_pair(i + SYMBOL_MIN, M[i]));
+        A.push_back(make_pair(i + INT_MIN, M[i]));
     sort(A.begin(), A.end(), cmp);
     return A;
 }
 
 bool checkTreeValid(vector<int> codeLengths)
 {
-    std::sort(codeLengths.begin(), codeLengths.end(), std::greater<uint32_t>());
-    uint32_t currentLevel = codeLengths.front();
-    uint32_t numNodesAtLevel = 0;
-    for (uint32_t cl : codeLengths)
+    std::sort(codeLengths.begin(), codeLengths.end(), std::greater<int>());
+    int currentLevel = codeLengths.front();
+    int numNodesAtLevel = 0;
+    for (int cl : codeLengths)
     {
         if (cl == 0)
             break;
