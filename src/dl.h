@@ -1,5 +1,4 @@
-#ifndef DL_H
-#define DL_H
+#pragma once
 #include "tree.h"
 #include <iostream>
 #include <vector>
@@ -30,5 +29,3 @@ public:
     int getNumElements();
     friend ostream &operator<<(ostream &os, const DataLoader &dl);
 };
-
-#endif

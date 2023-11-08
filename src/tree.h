@@ -1,5 +1,4 @@
-#ifndef TREE_H
-#define TREE_H
+#pragma once
 #include "dl.h"
 #include <iostream>
 #include <vector>
@@ -27,5 +26,3 @@ public:
     static void testModify(int times = 1);
     Tree *getHuffman(DataLoader *dl);
 };
-
-#endif
