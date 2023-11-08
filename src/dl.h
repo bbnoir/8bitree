@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 
-typedef char int8;
+typedef int8_t int8;
 
 using namespace std;
 
@@ -13,19 +13,22 @@ class DataLoader
 {
 private:
     vector<vector<int8>> dataAry;
+    string filePath;
+    unsigned int numBytes;
     int numLines;
-    int numElements; // number of elements per line
-    int numInts;     // number of integers occured in the data
+    int intPerLine; // number of elements per line
+    int numInts;    // number of integers occured in the data
     int8 Max;
     int8 Min;
     vector<int> freqMap;
 
 public:
     DataLoader();
-    DataLoader(string filePath);
+    DataLoader(string filePath); // read data from file
     int getNumInts();
     int getNumLines();
     int getNumElements();
+    friend ostream &operator<<(ostream &os, const DataLoader &dl);
 };
 
 #endif

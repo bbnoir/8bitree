@@ -60,10 +60,12 @@ void SimulatedAnnealing()
 
 int main(int argc, char *argv[])
 {
-    // string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
+    string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
+    DataLoader *dl = new DataLoader(filePath);
+    cout << *dl << endl;
     // int numLeaf = 256;
 
-    Tree::testModify(10000);
+    // Tree::testModify(10000);
 
     // SimulatedAnnealing();
 
