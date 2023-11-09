@@ -1,4 +1,4 @@
 git pull
-git add .
+git add --all .
 git commit -m "udpate"
 git push

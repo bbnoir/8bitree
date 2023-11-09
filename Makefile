@@ -26,7 +26,8 @@ DISTCLEAN_LIST := $(OBJ) \
                   $(OBJ_DEBUG)
 CLEAN_LIST := $(TARGETS) \
 			  $(TARGET_DEBUG) \
-			  $(DISTCLEAN_LIST)
+			  $(TARGETS_OBJ) \
+			  $(DISTCLEAN_LIST) 
 
 # default rule
 default: makedir all
