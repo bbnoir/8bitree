@@ -1,14 +1,12 @@
 #pragma once
-#include "dl.h"
+#include "DataLoader.h"
 #include <iostream>
 #include <vector>
 #include <set>
 
 using namespace std;
 
-class DataLoader;
-
-class Tree
+class TreeArray
 {
 private:
     vector<int> treeAry;
@@ -19,10 +17,10 @@ private:
     bool checkKraft();
 
 public:
-    Tree(int numLeaf);
-    Tree *modify(int times = 1);
-    friend ostream &operator<<(ostream &os, const Tree &tree);
+    TreeArray(int numLeaf);
+    TreeArray *modify(int times = 1);
+    friend ostream &operator<<(ostream &os, const TreeArray &tree);
     int getMinWidth(DataLoader *dl);
     static void testModify(int times = 1);
-    Tree *getHuffman(DataLoader *dl);
+    TreeArray *getHuffman(DataLoader *dl);
 };

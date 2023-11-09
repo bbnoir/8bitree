@@ -1,5 +1,7 @@
+#include <iostream>
 #include "Encoder.h"
 #include "Decoder.h"
+#include "DataLoader.h"
 #include "Constants.h"
 #include <random>
 #include <iostream>
@@ -7,7 +9,7 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char *argv[])
 {
     // given code length
     vector<int> codeLength(INT_NUM, 0);
@@ -16,11 +18,11 @@ int main()
     // generate canonical code
     map<int, string> canonCode = genCanonCode(codeLength);
     for (auto i : canonCode)
-        cout << i.first << " " << i.second << endl;
+        std::cout << i.first << " " << i.second << endl;
 
     // given encoded data, output decoded data
-    ifstream in("encoded_data.txt");
-    ofstream out("decoded_data.txt");
+    ifstream in("./data/encoded_data.txt");
+    ofstream out("./data/decoded_data.txt");
     Decoder decoder(in);
     while (decoder.notEOF())
     {

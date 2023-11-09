@@ -1,14 +1,14 @@
-#include "tree.h"
+#include "TreeArray.h"
 #include <cmath>
 
-Tree::Tree(int numLeaf) : treeAry(16, 0)
+TreeArray::TreeArray(int numLeaf) : treeAry(16, 0)
 {
     dim = 16;
     treeAry[8] = numLeaf;
     leafSet.insert(8);
 }
 
-ostream &operator<<(ostream &os, const Tree &tree)
+ostream &operator<<(ostream &os, const TreeArray &tree)
 {
     for (int i = 0; i < tree.dim; i++)
     {
@@ -17,7 +17,7 @@ ostream &operator<<(ostream &os, const Tree &tree)
     return os;
 }
 
-bool Tree::checkKraft()
+bool TreeArray::checkKraft()
 {
     double sum = 0;
     for (int i = 0; i < dim; i++)
@@ -39,9 +39,9 @@ T randIdx(set<T> const &s)
     return *it;
 }
 
-Tree *Tree::modify(int times)
+TreeArray *TreeArray::modify(int times)
 {
-    Tree *newTree = new Tree(*this);
+    TreeArray *newTree = new TreeArray(*this);
     while (times--)
     {
         bool mod_success = false;
@@ -100,23 +100,23 @@ Tree *Tree::modify(int times)
     return newTree;
 }
 
-void Tree::testModify(int times)
+void TreeArray::testModify(int times)
 {
-    Tree *tree = new Tree(256);
+    TreeArray *tree = new TreeArray(256);
     cout << "iter: " << 0 << " tree: " << *tree << endl;
     for (int i = 1; i <= times; i++)
     {
 
         // int m = rand() % 6 + 1;
         int m = 1;
-        Tree *newTree = tree->modify(m);
+        TreeArray *newTree = tree->modify(m);
         delete tree;
         tree = newTree;
         cout << "iter: " << i << " tree: " << *tree << endl;
     }
 }
 
-int Tree::getMinWidth(DataLoader *dl)
+int TreeArray::getMinWidth(DataLoader *dl)
 {
     int minWidth = 0;
     // for (int i = 0; i < dl->getNumLines(); i++)
@@ -127,7 +127,7 @@ int Tree::getMinWidth(DataLoader *dl)
     return minWidth;
 }
 
-Tree *Tree::getHuffman(DataLoader *dl)
+TreeArray *TreeArray::getHuffman(DataLoader *dl)
 {
     return this;
 }
