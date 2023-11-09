@@ -84,7 +84,7 @@ string Decoder::readline()
 
         if (dynamic_cast<const Leaf *>(nextNode) != nullptr)
         {
-            result << dynamic_cast<const Leaf *>(nextNode)->symbol + INT_MIN << " ";
+            result << dynamic_cast<const Leaf *>(nextNode)->symbol + SYM_MIN << " ";
             currentNode = &codeTree->root;
         }
         else if (dynamic_cast<const InternalNode *>(nextNode))

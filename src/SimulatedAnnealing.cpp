@@ -9,16 +9,15 @@ void SimulatedAnnealing()
 {
     string filePath = "../data/ALBERT/ALBERT_word_emb.txt";
     int numLeaf = 256;
-    DataLoader *dl = new DataLoader(filePath);
-    TreeArray *tree = new TreeArray(numLeaf);
-    tree->getHuffman(dl);
+    DataLoader *DL = new DataLoader(filePath);
+    TreeArray *tree = TreeArray::genHuffmanArray(DL);
 
     const int maxIter = 10;
     int iter = 0;
     double T = 1000;
     double Rt = 0.99;
 
-    int curMinWidth = tree->getMinWidth(dl);
+    int curMinWidth = tree->getMinWidth(DL);
     TreeArray *newTree = NULL;
     int newMinWidth = 0;
     while (iter++ < maxIter)
@@ -27,7 +26,7 @@ void SimulatedAnnealing()
         cout << "Current tree: " << *tree << endl;
         cout << "Current minWidth: " << curMinWidth << endl;
         newTree = tree->modify();
-        newMinWidth = newTree->getMinWidth(dl);
+        newMinWidth = newTree->getMinWidth(DL);
         cout << "New tree: " << *newTree << endl;
         cout << "New minWidth: " << newMinWidth << endl;
         if (newMinWidth < curMinWidth || rand() % 10000 < exp((curMinWidth - newMinWidth) / T) * 10000)

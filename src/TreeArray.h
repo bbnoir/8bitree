@@ -12,7 +12,6 @@ private:
     vector<int> treeAry;
     int dim;
     set<int> leafSet;
-    const int maxDim = 32;
 
     bool checkKraft();
 
@@ -22,5 +21,5 @@ public:
     friend ostream &operator<<(ostream &os, const TreeArray &tree);
     int getMinWidth(DataLoader *dl);
     static void testModify(int times = 1);
-    TreeArray *getHuffman(DataLoader *dl);
+    static TreeArray *genHuffmanArray(DataLoader *DL);
 };

@@ -1,7 +1,8 @@
 #include "TreeArray.h"
+#include "Constants.h"
 #include <cmath>
 
-TreeArray::TreeArray(int numLeaf) : treeAry(16, 0)
+TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0)
 {
     dim = 16;
     treeAry[8] = numLeaf;
@@ -52,7 +53,7 @@ TreeArray *TreeArray::modify(int times)
             switch (mode)
             {
             case 0: // [+1, -3, +2]
-                if (newTree->treeAry[idx] >= 3 && idx + 1 < newTree->maxDim)
+                if (newTree->treeAry[idx] >= 3 && idx + 1 < ARRAY_SIZE)
                 {
                     if (idx == newTree->dim - 1)
                     {
@@ -70,7 +71,7 @@ TreeArray *TreeArray::modify(int times)
                 }
                 break;
             case 1: // [+1, -2, -1, +2]
-                if (newTree->treeAry[idx] >= 1 && newTree->treeAry[idx - 1] >= 2 && idx + 1 < newTree->maxDim)
+                if (newTree->treeAry[idx] >= 1 && newTree->treeAry[idx - 1] >= 2 && idx + 1 < ARRAY_SIZE)
                 {
                     if (idx == newTree->dim - 1)
                     {
@@ -127,7 +128,8 @@ int TreeArray::getMinWidth(DataLoader *dl)
     return minWidth;
 }
 
-TreeArray *TreeArray::getHuffman(DataLoader *dl)
+TreeArray *TreeArray::genHuffmanArray(DataLoader *DL)
 {
-    return this;
+    TreeArray *tree = new TreeArray(DL->getNumInts());
+    return tree;
 }

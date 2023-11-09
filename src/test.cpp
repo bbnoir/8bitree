@@ -12,8 +12,8 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     // given code length
-    vector<int> codeLength(INT_NUM, 0);
-    for (int i = 0; i < INT_NUM; i++)
+    vector<int> codeLength(SYM_NUM, 0);
+    for (int i = 0; i < SYM_NUM; i++)
         codeLength[i] = 8;
     // generate canonical code
     map<int, string> canonCode = genCanonCode(codeLength);

@@ -1,4 +1,5 @@
 #include "Encoder.h"
+#include "Constants.h"
 #include <algorithm>
 #include <iostream>
 #include <bitset>
@@ -19,7 +20,7 @@ vector<pair<int, int>> sort(vector<int> M)
 {
     vector<pair<int, int>> A;
     for (int i = 0; i < M.size(); i++)
-        A.push_back(make_pair(i + INT_MIN, M[i]));
+        A.push_back(make_pair(i + SYM_MIN, M[i]));
     sort(A.begin(), A.end(), cmp);
     return A;
 }
