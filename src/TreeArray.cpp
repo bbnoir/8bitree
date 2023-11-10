@@ -9,6 +9,11 @@ TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 
     leafSet.insert(8);
 }
 
+vector<short> TreeArray::getCodeArray()
+{
+    return treeAry;
+}
+
 ostream &operator<<(ostream &os, const TreeArray &tree)
 {
     for (int i = 0; i < ARRAY_SIZE; i++)
@@ -159,6 +164,7 @@ int TreeArray::getMinWidth(DataLoader *dl)
 
 TreeArray *TreeArray::genHuffmanArray(DataLoader *DL)
 {
-    TreeArray *tree = new TreeArray(DL->getNumInts());
+    // TreeArray *tree = new TreeArray(DL->getNumInts());
+    TreeArray *tree = new TreeArray(SYM_NUM);
     return tree;
 }

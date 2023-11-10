@@ -26,5 +26,6 @@ public:
     int getNumInts();
     int getNumLines();
     int getNumElements();
+    vector<int> getFreqMap();
     friend ostream &operator<<(ostream &os, const DataLoader &dl);
 };

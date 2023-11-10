@@ -96,6 +96,11 @@ int DataLoader::getNumElements()
     return intPerLine;
 }
 
+vector<int> DataLoader::getFreqMap()
+{
+    return freqMap;
+}
+
 ostream &operator<<(ostream &os, const DataLoader &dl)
 {
     os << "filePath: " << dl.filePath << endl;

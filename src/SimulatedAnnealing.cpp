@@ -18,28 +18,25 @@ void SimulatedAnnealing()
     double Rt = 0.99;
 
     int curMinWidth = tree->getMinWidth(DL);
-    TreeArray *newTree = NULL;
     int newMinWidth = 0;
     while (iter++ < maxIter)
     {
         cout << "iter: " << iter << " T: " << T << endl;
         cout << "Current tree: " << *tree << endl;
         cout << "Current minWidth: " << curMinWidth << endl;
-        newTree = tree->modify();
-        newMinWidth = newTree->getMinWidth(DL);
-        cout << "New tree: " << *newTree << endl;
+        tree->modify(rand() % 6 + 1);
+        newMinWidth = tree->getMinWidth(DL);
+        cout << "New tree: " << *tree << endl;
         cout << "New minWidth: " << newMinWidth << endl;
         if (newMinWidth < curMinWidth || rand() % 10000 < exp((curMinWidth - newMinWidth) / T) * 10000)
         {
             cout << "Accept new tree" << endl;
-            delete tree;
-            tree = newTree;
+            tree->recover();
             curMinWidth = newMinWidth;
         }
         else
         {
             cout << "Preserve current tree" << endl;
-            delete newTree;
         }
         T *= Rt;
     }

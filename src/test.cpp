@@ -11,22 +11,27 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    // given code length
-    vector<int> codeLength(SYM_NUM, 0);
-    for (int i = 0; i < SYM_NUM; i++)
-        codeLength[i] = 8;
-    // generate canonical code
-    map<int, string> canonCode = genCanonCode(codeLength);
-    for (auto i : canonCode)
-        std::cout << i.first << " " << i.second << endl;
+    string dataFileName = "/home/U114ysyang/project/8bitree/data/ALBERT/ALBERT_word_emb.txt";
+    string encodedFileName = "/home/U114ysyang/project/8bitree/data/ALBERT/ALBERT_word_emb_encoded.txt";
+    string decodedFileName = "/home/U114ysyang/project/8bitree/data/ALBERT/ALBERT_word_emb_decoded.txt";
+
+    // given data, output encoded data
+    DataLoader *dl = new DataLoader(dataFileName);
+    TreeArray *tree = TreeArray::genHuffmanArray(dl);
+    tree->modify(100);
+    cout << *tree << endl;
+    Encoder encoder(dl, tree);
+    encoder.encode(dataFileName, encodedFileName);
 
     // given encoded data, output decoded data
-    ifstream in("./data/encoded_data.txt");
-    ofstream out("./data/decoded_data.txt");
+    ifstream in(encodedFileName);
+    ofstream out(decodedFileName);
     Decoder decoder(in);
     while (decoder.notEOF())
     {
-        out << decoder.readline() << endl;
+        out << decoder.readline();
+        if (decoder.notEOF())
+            out << endl;
     }
 
     return EXIT_SUCCESS;
