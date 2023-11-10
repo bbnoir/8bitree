@@ -9,17 +9,22 @@ using namespace std;
 class TreeArray
 {
 private:
-    vector<int> treeAry;
-    int dim;
-    set<int> leafSet;
+    vector<short> treeAry;
+    vector<short> prevAry;
+    set<short> leafSet;
+    set<short> prevLeafSet;
 
     bool checkKraft();
 
 public:
     TreeArray(int numLeaf);
-    TreeArray *modify(int times = 1);
+    const vector<short> &getTreeAry() const { return treeAry; }
     friend ostream &operator<<(ostream &os, const TreeArray &tree);
+
+    // for modify
+    void modify(int times);
+    void recover();
+    static void testModify(int times);
     int getMinWidth(DataLoader *dl);
-    static void testModify(int times = 1);
     static TreeArray *genHuffmanArray(DataLoader *DL);
 };
