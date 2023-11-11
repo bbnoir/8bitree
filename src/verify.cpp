@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.txt";
     string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.txt";
 
-    cout << "Start verifying for data file: " << dataFileName << endl;
+    cout << "Start verification with data file: " << dataFileName << endl;
 
     // load data
     cout << "Loading data..." << endl;
@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
     // setup tree array based on data
     cout << "Generating tree array..." << endl;
     TreeArray *tree = TreeArray::genHuffmanArray(dl);
-    tree->modify(10000);
-    // cout << "Tree array: " << *tree << endl;
+    tree->modify(rand() % 30000);
+    cout << "Tree array: " << *tree << endl;
 
     // encode data based on tree array
     cout << "Encoding data..." << endl;
