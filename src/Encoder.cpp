@@ -1,5 +1,6 @@
 #include "Encoder.h"
 #include "Constants.h"
+#include "Utils.h"
 #include <algorithm>
 #include <iostream>
 #include <bitset>
@@ -95,7 +96,6 @@ map<int, string> Encoder::genCanonCode()
         throw std::invalid_argument("At least 2 symbols needed");
     if (codeLength.size() > UINT32_MAX)
         throw std::length_error("Too many symbols");
-
     checkTreeValid(codeLength);
     // sort the codeLength map by value
     vector<pair<int, int>> sortedCodeLength = sort(codeLength);
@@ -106,6 +106,7 @@ map<int, string> Encoder::genCanonCode()
     int key = 0;
     int len = 0;
     int prevLen = 0;
+    // start generating canonCode
     for (auto i = sortedCodeLength.begin(); i != sortedCodeLength.end(); i++)
     {
         key = i->first;
@@ -121,15 +122,7 @@ map<int, string> Encoder::genCanonCode()
         }
         else
         {
-            currCode = prevCode;
-            if (prevLen == len)
-            {
-                currCode++;
-            }
-            else
-            {
-                currCode = 2 * (currCode + 1);
-            }
+            currCode = (prevCode + 1) << (len - prevLen);
         }
         canonCode[key] = bitset<40>(currCode).to_string().substr(40 - len, len);
         prevCode = currCode;
@@ -145,7 +138,6 @@ map<int, string> Encoder::genCanonCode(vector<int> codeLength)
         throw std::invalid_argument("At least 2 symbols needed");
     if (codeLength.size() > UINT32_MAX)
         throw std::length_error("Too many symbols");
-
     checkTreeValid(codeLength);
     // sort the codeLength map by value
     vector<pair<int, int>> sortedCodeLength = sort(codeLength);
@@ -202,6 +194,32 @@ void Encoder::encode(string inputFileName, string outputFileName)
     string line;
     while (getline(in, line))
     {
+        stringstream ss(line);
+        int num;
+        while (ss >> num)
+            out << canonCode[num];
+        out << endl;
+    }
+    in.close();
+    out.close();
+}
+
+void Encoder::encode(string inputFileName, string outputFileName, int numLines)
+{
+    ifstream in(inputFileName);
+    ofstream out(outputFileName);
+    genCodeLength();
+    // write the code length
+    for (int i = 0; i < SYM_NUM; i++)
+        out << codeLength[i] << " ";
+    out << endl;
+    // write the code
+    map<int, string> canonCode = genCanonCode();
+    int curline = 1;
+    string line;
+    while (getline(in, line))
+    {
+        progressBar(curline++, numLines);
         stringstream ss(line);
         int num;
         while (ss >> num)

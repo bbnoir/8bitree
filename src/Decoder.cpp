@@ -1,6 +1,7 @@
 #include "Decoder.h"
 #include "CodeTree.h"
 #include "Constants.h"
+#include "Utils.h"
 #include <stdexcept>
 #include <vector>
 #include <sstream>
@@ -49,7 +50,7 @@ CodeTree *Decoder::CanonicalToCodeTree(vector<int> codeLengths)
     return result;
 }
 
-Decoder::Decoder(ifstream &in) : input(in)
+Decoder::Decoder(string encodedFileName, string decodedFileName) : in(encodedFileName), out(decodedFileName)
 {
     vector<int> codeLengths;
     string line;
@@ -68,7 +69,7 @@ string Decoder::readline()
 
     const InternalNode *currentNode = &codeTree->root;
     string line;
-    getline(input, line);
+    getline(in, line);
     stringstream ss(line);
     char temp;
     stringstream result;
@@ -97,5 +98,27 @@ string Decoder::readline()
 
 bool Decoder::notEOF()
 {
-    return !input.eof();
+    return !in.eof();
+}
+
+void Decoder::decode()
+{
+    while (notEOF())
+    {
+        out << readline();
+        if (notEOF())
+            out << endl;
+    }
+}
+
+void Decoder::decode(int numLines)
+{
+    int progress = 0;
+    while (notEOF())
+    {
+        progressBar(progress++, numLines);
+        out << readline();
+        if (notEOF())
+            out << endl;
+    }
 }

@@ -9,7 +9,7 @@ OBJ_PATH := obj
 SRC_PATH := src
 
 # compile macros
-TARGET_NAMES := main test # only modify this line to add new target
+TARGET_NAMES := main verify test # only modify this line to add new target
 ifeq ($(OS),Windows_NT)
 	TARGET_NAMES := $(addsuffix .exe,$(TARGET_NAMES))
 endif
@@ -31,13 +31,11 @@ CLEAN_LIST := $(TARGETS) \
 
 # default rule
 default: makedir all
+.SECONDARY: $(OBJ) $(TARGETS_OBJ)
 
 # non-phony targets
-$(BIN_PATH)/main: $(OBJ) $(OBJ_PATH)/main.o
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(OBJ_PATH)/main.o
-
-$(BIN_PATH)/test: $(OBJ) $(OBJ_PATH)/test.o
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(OBJ_PATH)/test.o
+$(BIN_PATH)/%: $(OBJ) $(OBJ_PATH)/%.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
 	$(CXX) $(CCOBJFLAGS) -o $@ $<

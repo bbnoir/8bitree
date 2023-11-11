@@ -22,23 +22,30 @@ bool verify(string dataFileName, string decodedFileName, int numLines)
         if (dataLine != decodedLine)
         {
             cout << endl;
-            cout << "=== Verification failed at line " << curline << " ===" << endl;
+            cout << "     === Verification failed at line " << curline << " ===" << endl;
             cout << "Data line: " << dataLine << endl;
             cout << "Decoded line: " << decodedLine << endl;
+            cout << endl;
             return false;
         }
     }
     if (decodedFile.peek() != EOF)
     {
-        cout << "=== Verification failed: Decoded file has more lines than data file ===" << endl;
+        cout << endl;
+        cout << "     === Verification failed: Decoded file has more lines than data file ===" << endl;
+        cout << endl;
         return false;
     }
     if (dataFile.peek() != EOF)
     {
-        cout << "=== Verification failed: Data file has more lines than decoded file ===" << endl;
+        cout << endl;
+        cout << "     === Verification failed: Data file has more lines than decoded file ===" << endl;
+        cout << endl;
         return false;
     }
-    cout << "=== Congratulations! Verification passed! ===" << endl;
+    cout << endl;
+    cout << "     === Congratulations! Verification passed! ===" << endl;
+    cout << endl;
     return true;
 }
 
@@ -53,6 +60,8 @@ int main(int argc, char *argv[])
     string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.txt";
     string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.txt";
 
+    cout << "Start verifying for data file: " << dataFileName << endl;
+
     // load data
     cout << "Loading data..." << endl;
     DataLoader *dl = new DataLoader(dataFileName);
@@ -61,12 +70,12 @@ int main(int argc, char *argv[])
     cout << "Generating tree array..." << endl;
     TreeArray *tree = TreeArray::genHuffmanArray(dl);
     tree->modify(10000);
-    cout << "Tree array: " << *tree << endl;
+    // cout << "Tree array: " << *tree << endl;
 
     // encode data based on tree array
     cout << "Encoding data..." << endl;
     Encoder encoder(dl, tree);
-    encoder.encode(dataFileName, encodedFileName);
+    encoder.encode(dataFileName, encodedFileName, dl->getNumLines());
 
     // decode data
     cout << "Decoding data..." << endl;

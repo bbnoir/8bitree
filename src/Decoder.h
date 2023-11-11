@@ -14,32 +14,17 @@ class CodeTree;
 class Decoder final
 {
 
-    /*---- Fields ----*/
-
-    // The underlying bit input stream.
 private:
-    ifstream &input;
-
-private:
-    CodeTree *CanonicalToCodeTree(vector<int> codeLengths);
-
-    // The code tree to use in the next read() operation. Must be given a non-null value
-    // before calling read(). The tree can be changed after each symbol decoded, as long
-    // as the encoder and decoder have the same tree at the same point in the code stream.
-public:
+    ifstream in;
+    ofstream out;
     const CodeTree *codeTree;
-
-    /*---- Constructor ----*/
-
-    // Constructs a Huffman decoder based on the given bit input stream.
-public:
-    explicit Decoder(ifstream &in);
-
-    /*---- Method ----*/
-
-    // Reads from the input stream to decode the next Huffman-coded symbol.
-public:
+    // helper for generating CodeTree
+    CodeTree *CanonicalToCodeTree(vector<int> codeLengths);
     string readline();
-
     bool notEOF();
+
+public:
+    explicit Decoder(string encodedFileName, string decodedFileName);
+    void decode();
+    void decode(int numLines);
 };
