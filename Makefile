@@ -1,5 +1,5 @@
 # tool macros
-CXXFLAGS += -std=c++11 -O1 
+CXXFLAGS += -std=c++11 -O1
 DBGFLAGS := -g
 CCOBJFLAGS := $(CXXFLAGS) -c
 
@@ -27,7 +27,7 @@ DISTCLEAN_LIST := $(OBJ) \
 CLEAN_LIST := $(TARGETS) \
 			  $(TARGET_DEBUG) \
 			  $(TARGETS_OBJ) \
-			  $(DISTCLEAN_LIST) 
+			  $(DISTCLEAN_LIST)
 
 # default rule
 default: makedir all
@@ -46,7 +46,7 @@ $(TARGET_DEBUG): $(OBJ_DEBUG)
 # phony rules
 .PHONY: makedir
 makedir:
-	@mkdir -p $(BIN_PATH) $(OBJ_PATH) 
+	@mkdir -p $(BIN_PATH) $(OBJ_PATH)
 
 .PHONY: all
 all: $(TARGETS)

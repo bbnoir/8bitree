@@ -35,5 +35,7 @@ int main(int argc, char *argv[])
     auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
     cout << "Data loaded in " << duration.count() << " ms" << endl;
 
+    cout << "numLines: " << dl->getNumLines() << endl;
+
     return EXIT_SUCCESS;
 }
