@@ -21,8 +21,6 @@ if [ ! -z "$execute_all" ]; then
             fi
         done
     done
-fi
-    
 elif [ ! -z "$filename" ]; then
     ./bin/verify "$filename"
 elif [ ! -z "$foldername" ] && [ -z "$execute_all" ]; then

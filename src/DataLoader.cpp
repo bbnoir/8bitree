@@ -30,20 +30,29 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     vector<int8> lineAry;
     int8 num = 0;
     int N = 0;
-    while (getline(inFile, line))
+    getline(inFile, line);
+    stringstream ss(line);
+    while (ss >> N)
     {
-        lineAry.clear();
-        numLines++;
-        stringstream ss(line);
-        while (ss >> N)
+        num = int8(N);
+        lineAry.push_back(num);
+        freqMap[num + 128]++;
+    }
+    intPerLine = lineAry.size();
+    dataAry.push_back(lineAry);
+    lineAry.resize(intPerLine);
+    numLines++;
+    while (!inFile.eof())
+    {
+        for (int i = 0; i < intPerLine; i++)
         {
-            num = int8(N);
-            lineAry.push_back(num);
+            inFile >> N;
+            lineAry[i] = int8(N);
             freqMap[num + 128]++;
         }
         dataAry.push_back(lineAry);
+        numLines++;
     }
-    inFile.close();
     for (int i = 0; i < 256; i++)
     {
         if (freqMap[i] > 0)
@@ -53,7 +62,7 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     }
     Max = findMax(freqMap);
     Min = findMin(freqMap);
-    intPerLine = dataAry[0].size();
+    // intPerLine = dataAry[0].size();
     numBytes = numLines * intPerLine;
 }
 

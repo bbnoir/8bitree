@@ -1,46 +1,13 @@
 #include <iostream>
-#include "Encoder.h"
-#include "Decoder.h"
 #include "DataLoader.h"
 #include "Constants.h"
 #include "Utils.h"
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 using namespace std;
-
-bool verify(string dataFileName, string decodedFileName, int numLines)
-{
-    ifstream dataFile(dataFileName);
-    ifstream decodedFile(decodedFileName);
-    string dataLine, decodedLine;
-    int curline = 1;
-    while (getline(dataFile, dataLine) && getline(decodedFile, decodedLine))
-    {
-        progressBar(curline++, numLines);
-        if (dataLine != decodedLine)
-        {
-            cout << endl;
-            cout << "=== Verification failed at line " << curline << " ===" << endl;
-            cout << "Data line: " << dataLine << endl;
-            cout << "Decoded line: " << decodedLine << endl;
-            return false;
-        }
-    }
-    if (decodedFile.peek() != EOF)
-    {
-        cout << "=== Verification failed: Decoded file has more lines than data file ===" << endl;
-        return false;
-    }
-    if (dataFile.peek() != EOF)
-    {
-        cout << "=== Verification failed: Data file has more lines than decoded file ===" << endl;
-        return false;
-    }
-    cout << "=== Congratulations! Verification passed! ===" << endl;
-    return true;
-}
 
 int main(int argc, char *argv[])
 {
@@ -53,29 +20,20 @@ int main(int argc, char *argv[])
     string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.txt";
     string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.txt";
 
+    bool clean = true;
+    if (argc == 3 && string(argv[2]) == "noclean")
+        clean = false;
+
+    // calculate data load time
+    auto start = chrono::high_resolution_clock::now();
+
     // load data
     cout << "Loading data..." << endl;
     DataLoader *dl = new DataLoader(dataFileName);
 
-    // setup tree array based on data
-    cout << "Generating tree array..." << endl;
-    TreeArray *tree = TreeArray::genHuffmanArray(dl);
-    tree->modify(10000);
-    cout << "Tree array: " << *tree << endl;
-
-    // encode data based on tree array
-    cout << "Encoding data..." << endl;
-    Encoder encoder(dl, tree);
-    encoder.encode(dataFileName, encodedFileName);
-
-    // decode data
-    cout << "Decoding data..." << endl;
-    Decoder decoder(encodedFileName, decodedFileName);
-    decoder.decode(dl->getNumLines());
-
-    // verify
-    cout << "Verifying..." << endl;
-    bool success = verify(dataFileName, decodedFileName, dl->getNumLines());
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+    cout << "Data loaded in " << duration.count() << " ms" << endl;
 
     return EXIT_SUCCESS;
 }
