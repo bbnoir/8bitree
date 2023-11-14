@@ -1,0 +1,54 @@
+#!/bin/bash
+
+while getopts "f:d:al:" opt; do
+    case $opt in
+        f) filename="$OPTARG"
+        ;;
+        d) foldername="$OPTARG"
+        ;;
+        a) execute_all=true
+        ;;
+        l) logfilename="$OPTARG"
+        ;;
+        \?) echo "Invalid option -$OPTARG" >&2
+        ;;
+    esac
+done
+
+if [ ! -z "$logfilename" ]; then
+    if [ ! -z "$execute_all" ]; then
+        for folder in data/*; do
+            for file in "$folder"/*; do
+                if [[ "$file" != *"decoded"* && "$file" != *"encoded"* && "$file" != *".bin" ]]; then
+                    ./bin/txt2bin "$file" >> "$logfilename"
+                fi
+            done
+        done
+    elif [ ! -z "$filename" ]; then
+            ./bin/txt2bin "$file" >> "$logfilename"
+    elif [ ! -z "$foldername" ] && [ -z "$execute_all" ]; then
+        for file in "$foldername"/*; do
+            ./bin/txt2bin "$file" >> "$logfilename"
+        done
+    else
+        echo "Please specify either a filename or a foldername."
+    fi
+else
+    if [ ! -z "$execute_all" ]; then
+        for folder in data/*; do
+            for file in "$folder"/*; do
+                if [[ "$file" != *"decoded"* && "$file" != *"encoded"* && "$file" != *".bin" ]]; then
+                    ./bin/txt2bin "$file"
+                fi
+            done
+        done
+    elif [ ! -z "$filename" ]; then
+        ./bin/txt2bin "$filename"
+    elif [ ! -z "$foldername" ] && [ -z "$execute_all" ]; then
+        for file in "$foldername"/*; do
+            ./bin/txt2bin "$file"
+        done
+    else
+        echo "Please specify either a filename or a foldername."
+    fi
+fi
