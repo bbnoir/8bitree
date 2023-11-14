@@ -1,0 +1,36 @@
+#!/bin/bash
+
+while getopts ":f:d:a" opt; do
+    case $opt in
+        f) filename="$OPTARG"
+        ;;
+        d) foldername="$OPTARG"
+        ;;
+        a) execute_all=true
+        ;;
+        \?) echo "Invalid option -$OPTARG" >&2
+        ;;
+    esac
+done
+
+if [ ! -z "$execute_all" ]; then
+    for folder in data/*; do
+        for file in "$folder"/*; do
+            if [[ "$file" == *".txt" ]]; then
+                rm "$file"
+            fi
+        done
+    done
+elif [ ! -z "$filename" ]; then
+    if [[ "$filename" == *".txt" ]]; then
+        rm "$filename"
+    fi
+elif [ ! -z "$foldername" ] && [ -z "$execute_all" ]; then
+    for file in "$foldername"/*; do
+        if [[ "$file" == *".txt" ]]; then
+            rm "$file"
+        fi
+    done
+else
+    echo "Please specify either a filename or a foldername."
+fi
