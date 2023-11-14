@@ -120,15 +120,18 @@ DataLoader::DataLoader(int bin, string filePath) : filePath(""), numLines(0), in
         }
         intPerLine = *(int *)addr;
         numLines = *((int *)addr + 1);
+        int8 *cur = addr + 2;
         dataAry = vector<vector<int8>>(numLines, vector<int8>(intPerLine, 0));
         int8 num = 0;
         for (int i = 0; i < numLines; i++)
+        {
             for (int j = 0; j < intPerLine; j++)
             {
-                num = *(addr + 2 + i * intPerLine + j);
+                num = *(cur++);
                 dataAry[i][j] = num;
                 freqMap[num + 128]++;
             }
+        }
         munmap(addr, length);
         close(fd);
         for (int i = 0; i < 256; i++)
