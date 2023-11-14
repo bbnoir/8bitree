@@ -158,7 +158,7 @@ int TreeArray::getMinWidth(DataLoader *dl)
     // {
     //     ;
     // }
-    minWidth = (rand() % 200) / 100.0 * dl->getNumElements() * 8;
+    minWidth = (rand() % 200) / 100.0 * dl->getIntPerLine() * 8;
     return minWidth;
 }
 

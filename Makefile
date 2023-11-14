@@ -9,7 +9,7 @@ OBJ_PATH := obj
 SRC_PATH := src
 
 # compile macros
-TARGET_NAMES := main verify test # only modify this line to add new target
+TARGET_NAMES := main verify test btest txt2bin # only modify this line to add new target
 ifeq ($(OS),Windows_NT)
 	TARGET_NAMES := $(addsuffix .exe,$(TARGET_NAMES))
 endif

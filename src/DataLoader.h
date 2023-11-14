@@ -22,10 +22,12 @@ private:
 
 public:
     DataLoader();
-    DataLoader(string filePath); // read data from file
+    DataLoader(string filePath);          // read data from file
+    DataLoader(int bin, string filePath); // read data from bin ifstream
     int getNumInts();
     int getNumLines();
-    int getNumElements();
+    int getIntPerLine();
+    const vector<vector<int8>> &getDataAry();
     vector<int> getFreqMap();
     friend ostream &operator<<(ostream &os, const DataLoader &dl);
 };

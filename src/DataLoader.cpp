@@ -2,6 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -57,6 +61,89 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     numBytes = numLines * intPerLine;
 }
 
+DataLoader::DataLoader(int bin, string filePath) : filePath(""), numLines(0), intPerLine(128), numInts(0), Max(0), Min(0)
+{
+    this->filePath = filePath;
+    freqMap = vector<int>(256, 0);
+    if (bin == 0)
+    {
+        ifstream inFile(filePath, std::ios::binary);
+        if (!inFile)
+        {
+            cout << "Error: can't open file" << endl;
+            exit(1);
+        }
+        inFile.read((char *)&intPerLine, sizeof(int));
+        inFile.read((char *)&numLines, sizeof(int));
+        dataAry = vector<vector<int8>>(numLines, vector<int8>(intPerLine, 0));
+        int8 num = 0;
+        for (int i = 0; i < numLines; i++)
+            for (int j = 0; j < intPerLine; j++)
+            {
+                inFile.read((char *)&num, sizeof(int8));
+                dataAry[i][j] = num;
+                freqMap[num + 128]++;
+            }
+        inFile.close();
+        for (int i = 0; i < 256; i++)
+        {
+            if (freqMap[i] > 0)
+            {
+                numInts++;
+            }
+        }
+        Max = findMax(freqMap);
+        Min = findMin(freqMap);
+        numBytes = numLines * intPerLine;
+    }
+    else
+    {
+        // read data using mmap
+        int fd = open(filePath.c_str(), O_RDONLY);
+        if (fd == -1)
+        {
+            cout << "Error: can't open file" << endl;
+            exit(1);
+        }
+        struct stat sb;
+        if (fstat(fd, &sb) == -1)
+        {
+            cout << "Error: can't get file size" << endl;
+            exit(1);
+        }
+        size_t length = sb.st_size;
+        int8 *addr = (int8 *)mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+        if (addr == MAP_FAILED)
+        {
+            cout << "Error: mmap failed" << endl;
+            exit(1);
+        }
+        intPerLine = *(int *)addr;
+        numLines = *((int *)addr + 1);
+        dataAry = vector<vector<int8>>(numLines, vector<int8>(intPerLine, 0));
+        int8 num = 0;
+        for (int i = 0; i < numLines; i++)
+            for (int j = 0; j < intPerLine; j++)
+            {
+                num = *(addr + 2 + i * intPerLine + j);
+                dataAry[i][j] = num;
+                freqMap[num + 128]++;
+            }
+        munmap(addr, length);
+        close(fd);
+        for (int i = 0; i < 256; i++)
+        {
+            if (freqMap[i] > 0)
+            {
+                numInts++;
+            }
+        }
+        Max = findMax(freqMap);
+        Min = findMin(freqMap);
+        numBytes = numLines * intPerLine;
+    }
+}
+
 int8 findMin(vector<int> freqMap)
 {
     for (int i = 0; i < 256; i++)
@@ -91,9 +178,14 @@ int DataLoader::getNumLines()
     return numLines;
 }
 
-int DataLoader::getNumElements()
+int DataLoader::getIntPerLine()
 {
     return intPerLine;
+}
+
+const vector<vector<int8>> &DataLoader::getDataAry()
+{
+    return dataAry;
 }
 
 vector<int> DataLoader::getFreqMap()
