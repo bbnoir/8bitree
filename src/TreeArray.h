@@ -25,6 +25,5 @@ public:
     void modify(int times);
     void recover();
     static void testModify(int times);
-    int getMinWidth(DataLoader *dl);
     static TreeArray *genHuffmanArray(DataLoader *DL);
 };

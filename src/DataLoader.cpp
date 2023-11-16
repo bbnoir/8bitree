@@ -1,5 +1,6 @@
 #include "DataLoader.h"
 #include "Constants.h"
+#include "Utils.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -88,11 +89,14 @@ DataLoader::DataLoader(int bin, string filePath) : filePath(""), numLines(0), in
     }
     intPerLine = *(int *)addr;
     numLines = *((int *)addr + 1);
+    cout << "intPerLine: " << intPerLine << endl;
+    cout << "numLines: " << numLines << endl;
     int8 *cur = (int8 *)(addr + 2 * sizeof(int));
     dataAry = vector<vector<int8>>(numLines, vector<int8>(intPerLine, 0));
     int8 num = 0;
     for (int i = 0; i < numLines; i++)
     {
+        progressBar("Loading data", i, numLines);
         for (int j = 0; j < intPerLine; j++)
         {
             num = *(cur++);

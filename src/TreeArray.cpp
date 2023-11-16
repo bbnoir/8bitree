@@ -5,8 +5,41 @@
 TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 0)
 {
     // balance tree
-    treeAry[8] = numLeaf;
-    leafSet.insert(8);
+    if (numLeaf == SYM_NUM)
+    {
+        // balance tree
+        treeAry[8] = numLeaf;
+        leafSet.insert(8);
+    }
+    else
+    {
+        treeAry[8] = numLeaf;
+        int i = 8;
+        int j = 7;
+        while (!checkKraft())
+        {
+            treeAry[i] -= 1;
+            treeAry[j] += 1;
+            if (treeAry[i] == 0)
+                leafSet.erase(i);
+            if (treeAry[j] == 1)
+                leafSet.insert(j);
+            if (treeAry[i] == 0)
+            {
+                i--;
+                j--;
+            }
+            if (treeAry[j] == pow(2, j))
+            {
+                j--;
+            }
+            if (j == -1)
+            {
+                cout << "Error: Cannot balance tree" << endl;
+                exit(1);
+            }
+        }
+    }
 }
 
 vector<short> TreeArray::getCodeArray()
@@ -28,12 +61,12 @@ bool TreeArray::checkKraft()
     double sum = 0;
     for (int i = 0; i < ARRAY_SIZE; i++)
         sum += treeAry[i] * pow(2, -i);
-    if (sum != 1)
-    {
-        cerr << "Error: Kraft's inequality is not satisfied" << endl;
-        cerr << "TreeArray:" << *this << endl;
-        exit(1);
-    }
+    // if (sum != 1)
+    // {
+    // cerr << "Error: Kraft's inequality is not satisfied" << endl;
+    // cerr << "TreeArray:" << *this << endl;
+    // exit(1);
+    // }
     return sum == 1;
 }
 
@@ -149,17 +182,6 @@ void TreeArray::testModify(int times = 1)
         if (i % 1000 == 0)
             cout << "iter: " << i << " tree: " << *tree << endl;
     }
-}
-
-int TreeArray::getMinWidth(DataLoader *dl)
-{
-    int minWidth = 0;
-    // for (int i = 0; i < dl->getNumLines(); i++)
-    // {
-    //     ;
-    // }
-    minWidth = (rand() % 200) / 100.0 * dl->getIntPerLine() * 8;
-    return minWidth;
 }
 
 TreeArray *TreeArray::genHuffmanArray(DataLoader *DL)
