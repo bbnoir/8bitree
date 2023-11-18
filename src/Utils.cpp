@@ -8,6 +8,7 @@ void progressBar(int progress, int total)
     int barWidth = 50;
     float progressRatio = (float)progress / total;
     int pos = barWidth * progressRatio;
+    cout.flush();
     cout << "[";
     for (int i = 0; i < barWidth; ++i)
     {
@@ -19,7 +20,6 @@ void progressBar(int progress, int total)
             cout << " ";
     }
     cout << "] " << int(progressRatio * 100.0) << " %\r";
-    cout.flush();
     if (progress == total)
         cout << endl;
 }
@@ -29,7 +29,8 @@ void progressBar(string title, int progress, int total)
     int barWidth = 50;
     float progressRatio = (float)progress / total;
     int pos = barWidth * progressRatio;
-    cout << setw(20) << title << " ";
+    cout.flush();
+    cout << setw(15) << title << " ";
     cout << "[";
     for (int i = 0; i < barWidth; ++i)
     {
@@ -41,7 +42,6 @@ void progressBar(string title, int progress, int total)
             cout << " ";
     }
     cout << "] " << int(progressRatio * 100.0) << " %\r";
-    cout.flush();
     if (progress == total)
         cout << endl;
 }

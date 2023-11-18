@@ -15,12 +15,11 @@ private:
     map<int, string> canonCode;
 
 public:
-    DataLoader *DL;
+    DataLoader *dl;
     TreeArray *tree;
     Encoder(DataLoader *dl, TreeArray *tree);
     vector<int> genCodeLength();
     map<int, string> genCanonCode();
     static map<int, string> genCanonCode(vector<int> codeLength);
-    void encode(string inputFileName, string outputFileName);
-    void encode(string inputFileName, string outputFileName, int numLines);
+    void encode(string outputFileName);
 };

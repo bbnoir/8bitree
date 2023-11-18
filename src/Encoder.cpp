@@ -9,12 +9,12 @@
 
 using namespace std;
 
-Encoder::Encoder(DataLoader *dl, TreeArray *tree) : DL(dl), tree(tree) {}
+Encoder::Encoder(DataLoader *dl, TreeArray *tree) : dl(dl), tree(tree) {}
 
 vector<int> Encoder::genCodeLength()
 {
     codeLength = vector<int>(SYM_NUM, 0);
-    vector<int> freqMap = DL->getFreqMap();
+    vector<int> freqMap = dl->getFreqMap();
     // sort the freqMap based on the frequency
     vector<pair<int, int8>> freqMapWithIndex;
     // <frequency, number>
@@ -180,9 +180,8 @@ map<int, string> Encoder::genCanonCode(vector<int> codeLength)
     return canonCode;
 }
 
-void Encoder::encode(string inputFileName, string outputFileName)
+void Encoder::encode(string outputFileName)
 {
-    ifstream in(inputFileName);
     ofstream out(outputFileName);
     genCodeLength();
     // write the code length
@@ -191,41 +190,14 @@ void Encoder::encode(string inputFileName, string outputFileName)
     out << endl;
     // write the code
     map<int, string> canonCode = genCanonCode();
-    string line;
-    while (getline(in, line))
+    int numLines = dl->getNumLines();
+    int intPerLine = dl->getIntPerLine();
+    for (int i = 0; i < numLines; i++)
     {
-        stringstream ss(line);
-        int num;
-        while (ss >> num)
-            out << canonCode[num];
+        progressBar("Encode", i, numLines - 1);
+        for (int j = 0; j < intPerLine; j++)
+            out << canonCode[dl->getDataAry()[i][j]];
         out << endl;
     }
-    in.close();
-    out.close();
-}
-
-void Encoder::encode(string inputFileName, string outputFileName, int numLines)
-{
-    ifstream in(inputFileName);
-    ofstream out(outputFileName);
-    genCodeLength();
-    // write the code length
-    for (int i = 0; i < SYM_NUM; i++)
-        out << codeLength[i] << " ";
-    out << endl;
-    // write the code
-    map<int, string> canonCode = genCanonCode();
-    int curline = 1;
-    string line;
-    while (getline(in, line))
-    {
-        progressBar(curline++, numLines);
-        stringstream ss(line);
-        int num;
-        while (ss >> num)
-            out << canonCode[num];
-        out << endl;
-    }
-    in.close();
     out.close();
 }

@@ -7,25 +7,44 @@
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
-bool verify(string dataFileName, string decodedFileName, int numLines)
+bool verify(DataLoader *dl, string decodedFileName)
 {
-    ifstream dataFile(dataFileName);
     ifstream decodedFile(decodedFileName);
-    string dataLine, decodedLine;
-    int curline = 1;
-    while (getline(dataFile, dataLine) && getline(decodedFile, decodedLine))
+    string decodedLine;
+    int curline = 0;
+    int intPerLine = dl->getIntPerLine();
+    int numLines = dl->getNumLines();
+    bool diff = false;
+    while (getline(decodedFile, decodedLine))
     {
-        progressBar(curline++, numLines);
-        if (dataLine != decodedLine)
+        progressBar("Verify", curline++, numLines - 1);
+        stringstream ss(decodedLine);
+        int n;
+        for (int i = 0; i < intPerLine; i++)
+        {
+            ss >> n;
+            if (n != dl->getDataAry()[curline - 1][i])
+            {
+                diff = true;
+                break;
+            }
+        }
+        if (diff)
         {
             cout << endl;
             cout << "\033[31m"
                  << "     === Verification failed at line " << curline << " ==="
                  << "\033[0m" << endl;
-            cout << "Data line: " << dataLine << endl;
+            cout << "Data line: ";
+            for (int i = 0; i < intPerLine; i++)
+                cout << dl->getDataAry()[curline - 1][i] << " ";
+            cout << endl;
             cout << "Decoded line: " << decodedLine << endl;
             cout << endl;
             return false;
@@ -40,7 +59,7 @@ bool verify(string dataFileName, string decodedFileName, int numLines)
         cout << endl;
         return false;
     }
-    if (dataFile.peek() != EOF)
+    if (curline != numLines)
     {
         cout << endl;
         cout << "\033[31m"
@@ -59,7 +78,7 @@ bool verify(string dataFileName, string decodedFileName, int numLines)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc < 2)
     {
         cout << "Usage: ./test <dataFileName>" << endl;
         return EXIT_FAILURE;
@@ -77,29 +96,26 @@ int main(int argc, char *argv[])
     cout << "\033[0m";
 
     // load data
-    cout << "Loading data..." << endl;
-    DataLoader *dl = new DataLoader(dataFileName);
+    DataLoader *dl = new DataLoader(0, dataFileName);
 
     // setup tree array based on data
     cout << "Generating tree array..." << endl;
     TreeArray *tree = TreeArray::genHuffmanArray(dl);
+    // TreeArray *tree = new TreeArray(dl->getNumInts());
     srand(time(NULL));
     tree->modify(rand() % 30000);
     cout << "Tree array: " << *tree << endl;
 
     // encode data based on tree array
-    cout << "Encoding data..." << endl;
     Encoder encoder(dl, tree);
-    encoder.encode(dataFileName, encodedFileName, dl->getNumLines());
+    encoder.encode(encodedFileName);
 
     // decode data
-    cout << "Decoding data..." << endl;
     Decoder decoder(encodedFileName, decodedFileName);
     decoder.decode(dl->getNumLines());
 
     // verify
-    cout << "Verifying..." << endl;
-    bool success = verify(dataFileName, decodedFileName, dl->getNumLines());
+    bool success = verify(dl, decodedFileName);
 
     // clean up
     if (clean)

@@ -116,7 +116,7 @@ void Decoder::decode(int numLines)
     int progress = 0;
     while (notEOF())
     {
-        progressBar(progress++, numLines);
+        progressBar("Decode", progress++, numLines);
         out << readline();
         if (notEOF())
             out << endl;

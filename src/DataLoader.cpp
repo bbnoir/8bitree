@@ -96,7 +96,7 @@ DataLoader::DataLoader(int bin, string filePath) : filePath(""), numLines(0), in
     int8 num = 0;
     for (int i = 0; i < numLines; i++)
     {
-        progressBar("Loading data", i, numLines);
+        progressBar("Loading data", i, numLines - 1);
         for (int j = 0; j < intPerLine; j++)
         {
             num = *(cur++);
