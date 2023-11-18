@@ -28,7 +28,7 @@ vector<int> Encoder::genCodeLength()
     // [nums of 0 bits code, nums of 1 bits code, ...] sum = 16
     int cl = 0;
     // let higher frequency symbol have shorter code length
-    for (int j = 0; j < SYM_NUM; j++)
+    for (int j = 0; j < dl->getNumInts(); j++)
     {
         while (treeAry[cl] == 0)
             cl++;

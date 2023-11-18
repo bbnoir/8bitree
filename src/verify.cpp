@@ -100,10 +100,11 @@ int main(int argc, char *argv[])
 
     // setup tree array based on data
     cout << "Generating tree array..." << endl;
-    TreeArray *tree = TreeArray::genHuffmanArray(dl);
-    // TreeArray *tree = new TreeArray(dl->getNumInts());
+    // TreeArray *tree = TreeArray::genHuffmanArray(dl);
+    cout << "numInts: " << dl->getNumInts() << endl;
+    TreeArray *tree = new TreeArray(dl->getNumInts());
     srand(time(NULL));
-    tree->modify(rand() % 30000);
+    // tree->modify(rand() % 30000);
     cout << "Tree array: " << *tree << endl;
 
     // encode data based on tree array
