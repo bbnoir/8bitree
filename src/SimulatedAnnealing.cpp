@@ -30,7 +30,7 @@ int SimulatedAnnealing::run()
         cout << "cur tree: " << *tree << endl;
         cout << "cur width: " << MaxWidth << endl;
         srand(time(NULL));
-        tree->modify(rand() % 100 + 1);
+        tree->modify(rand() % 1000 + 1);
         newMaxWidth = encoder->getMaxWidth();
         cout << "new tree: " << *tree << endl;
         cout << "new width: " << newMaxWidth << endl;
@@ -40,7 +40,8 @@ int SimulatedAnnealing::run()
             delete bestTree;
             bestTree = new TreeArray(*tree);
         }
-        if (newMaxWidth < MaxWidth || rand() % 10000 < exp((MaxWidth - newMaxWidth) / T) * 10000)
+        // if (newMaxWidth < MaxWidth || rand() % 10000 < exp((MaxWidth - newMaxWidth) / T) * 10000)
+        if (newMaxWidth < MaxWidth)
         {
             cout << "=> Accept new tree" << endl;
             MaxWidth = newMaxWidth;
@@ -57,18 +58,20 @@ int SimulatedAnnealing::run()
 
 void SimulatedAnnealing::show()
 {
-    cout << "===============================" << endl;
-    cout << "=========== Result ============" << endl;
-    cout << "===============================" << endl;
+    cout << "=======================================================================================" << endl;
+    cout << "======================================= Result ========================================" << endl;
+    cout << "=======================================================================================" << endl;
     cout << "Input file: " << config->filePath << endl;
     cout << "Maximum number of iterations: " << config->maxIter << endl;
     cout << "Initial temperature: " << config->T << endl;
     cout << "Temperature reduction rate: " << config->Rt << endl;
-    cout << "===============================" << endl;
+    cout << "=======================================================================================" << endl;
     cout << "Result Tree Array:" << endl;
     cout << *bestTree << endl;
-    cout << "===============================" << endl;
-    cout << "Minimum maximum width: " << minMaxWidth << endl;
-    cout << "Compression ratio: " << (double)dl->getIntPerLine() * 8 / minMaxWidth << endl;
-    cout << "===============================" << endl;
+    cout << "=======================================================================================" << endl;
+    double initWidth = dl->getIntPerLine() * 8;
+    cout << "Initial row width: " << initWidth << endl;
+    cout << "Maximum row width: " << minMaxWidth << endl;
+    cout << "Compression ratio: " << (initWidth - minMaxWidth) / initWidth * 100 << "%" << endl;
+    cout << "=======================================================================================" << endl;
 }

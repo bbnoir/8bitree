@@ -16,9 +16,9 @@ int main(int argc, char *argv[])
 
     Config config = {
         .filePath = argv[1],
-        .maxIter = 300,
-        .T = 1000,
-        .Rt = 0.99,
+        .maxIter = 100,
+        .T = 100,
+        .Rt = 0.999,
     };
 
     cout << "Input file: " << argv[1] << endl;

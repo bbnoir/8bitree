@@ -159,13 +159,13 @@ int Encoder::getMaxWidth()
     vector<int> result(dl->getNumLines(), 0);
     int numLines = dl->getNumLines();
     int intPerLine = dl->getIntPerLine();
-    // #pragma omp parallel if (dl->getNumBytes() > 16000000)
-    //     {
-    // #pragma omp for
-    for (int i = 0; i < numLines; i++)
-        for (int j = 0; j < intPerLine; j++)
-            result[i] += codeLength[dl->getDataAry()[i][j] - SYM_MIN];
-    // }
+#pragma omp parallel if (dl->getNumBytes() > 16000000)
+    {
+#pragma omp for
+        for (int i = 0; i < numLines; i++)
+            for (int j = 0; j < intPerLine; j++)
+                result[i] += codeLength[dl->getDataAry()[i][j] - SYM_MIN];
+    }
 
     return *max_element(result.begin(), result.end());
 }
