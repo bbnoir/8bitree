@@ -8,8 +8,8 @@ struct Config
 {
     string filePath; // Path to input data
     int maxIter;     // Maximum number of iterations
-    int T;           // Initial temperature
-    int Rt;          // Temperature reduction rate
+    double T;        // Initial temperature
+    double Rt;       // Temperature reduction rate
 };
 
 class SimulatedAnnealing

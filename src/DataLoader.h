@@ -16,14 +16,10 @@ private:
     int numLines;
     int intPerLine; // number of elements per line
     int numInts;    // number of integers occured in the data
-    int8 Max;
-    int8 Min;
     vector<int> freqMap;
 
 public:
-    DataLoader();
-    DataLoader(string filePath);          // read data from file
-    DataLoader(int bin, string filePath); // read data from bin ifstream
+    DataLoader(string filePath); // read data from bin file
     int getNumInts();
     int getNumLines();
     int getIntPerLine();

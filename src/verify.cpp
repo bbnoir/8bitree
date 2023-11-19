@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     cout << "\033[0m";
 
     // load data
-    DataLoader *dl = new DataLoader(0, dataFileName);
+    DataLoader *dl = new DataLoader(dataFileName);
 
     // setup tree array based on data
     cout << "Generating tree array..." << endl;

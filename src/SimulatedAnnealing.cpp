@@ -10,7 +10,7 @@ using namespace std;
 SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter(config->maxIter), T(config->T), Rt(config->Rt)
 {
     config = config;
-    dl = new DataLoader(0, config->filePath);
+    dl = new DataLoader(config->filePath);
     tree = new TreeArray(dl->getNumInts());
 }
 
