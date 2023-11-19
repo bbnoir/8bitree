@@ -7,6 +7,19 @@
 #include <sstream>
 #include <algorithm>
 
+Decoder::Decoder(string encodedFileName, string decodedFileName) : in(encodedFileName), out(decodedFileName)
+{
+    vector<int> codeLengths;
+    string line;
+    getline(in, line);
+    stringstream ss(line);
+    int length;
+    while (ss >> length)
+        codeLengths.push_back(length);
+    codeTree = CanonicalToCodeTree(codeLengths);
+    max_line_width = 0;
+}
+
 CodeTree *Decoder::CanonicalToCodeTree(vector<int> codeLengths)
 {
     vector<std::unique_ptr<Node>> nodes;
@@ -50,18 +63,6 @@ CodeTree *Decoder::CanonicalToCodeTree(vector<int> codeLengths)
     return result;
 }
 
-Decoder::Decoder(string encodedFileName, string decodedFileName) : in(encodedFileName), out(decodedFileName)
-{
-    vector<int> codeLengths;
-    string line;
-    getline(in, line);
-    stringstream ss(line);
-    int length;
-    while (ss >> length)
-        codeLengths.push_back(length);
-    codeTree = CanonicalToCodeTree(codeLengths);
-}
-
 string Decoder::readline()
 {
     if (codeTree == nullptr)
@@ -70,6 +71,7 @@ string Decoder::readline()
     const InternalNode *currentNode = &codeTree->root;
     string line;
     getline(in, line);
+    max_line_width = std::max(max_line_width, static_cast<int>(line.length()));
     stringstream ss(line);
     char temp;
     stringstream result;

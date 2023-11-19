@@ -7,7 +7,7 @@
 
 using namespace std;
 
-SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter(config->maxIter), T(config->T), Rt(config->Rt), minMaxWidth(0)
+SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter(config->maxIter), T(config->T), Rt(config->Rt), minMaxWidth(0), modRate(config->modRate)
 {
     config = config;
     dl = new DataLoader(config->filePath);
@@ -30,7 +30,7 @@ int SimulatedAnnealing::run()
         cout << "cur tree: " << *tree << endl;
         cout << "cur width: " << MaxWidth << endl;
         srand(time(NULL));
-        tree->modify(rand() % 1000 + 1);
+        tree->modify(rand() % modRate + 1);
         newMaxWidth = encoder->getMaxWidth();
         cout << "new tree: " << *tree << endl;
         cout << "new width: " << newMaxWidth << endl;

@@ -27,4 +27,5 @@ public:
     explicit Decoder(string encodedFileName, string decodedFileName);
     void decode();
     void decode(int numLines);
+    int max_line_width;
 };

@@ -11,6 +11,7 @@ struct Config
     int maxIter;     // Maximum number of iterations
     double T;        // Initial temperature
     double Rt;       // Temperature reduction rate
+    int modRate;     // Modification rate
 };
 
 class SimulatedAnnealing
@@ -18,16 +19,11 @@ class SimulatedAnnealing
 
 private:
     // config data
-    DataLoader *dl;
-    TreeArray *tree;
-    Encoder *encoder;
-    TreeArray *bestTree;
-
     int minMaxWidth;
-
     const int maxIter = 10;
     double T = 1000;
     double Rt = 0.99;
+    int modRate = 1000;
 
     // utility functions
 
@@ -37,4 +33,8 @@ public:
     int run();
     void show();
     Config *config;
+    DataLoader *dl;
+    TreeArray *tree;
+    Encoder *encoder;
+    TreeArray *bestTree;
 };
