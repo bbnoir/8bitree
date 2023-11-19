@@ -20,6 +20,6 @@ public:
     Encoder(DataLoader *dl, TreeArray *tree);
     vector<int> genCodeLength();
     map<int, string> genCanonCode();
-    static map<int, string> genCanonCode(vector<int> codeLength);
     void encode(string outputFileName);
+    int getMaxWidth();
 };

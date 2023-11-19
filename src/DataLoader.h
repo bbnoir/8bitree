@@ -23,6 +23,7 @@ public:
     int getNumInts();
     int getNumLines();
     int getIntPerLine();
+    int getNumBytes();
     const vector<vector<int8>> &getDataAry();
     vector<int> getFreqMap();
     friend ostream &operator<<(ostream &os, const DataLoader &dl);

@@ -42,6 +42,10 @@ TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 
     }
 }
 
+TreeArray::TreeArray(const TreeArray &tree) : treeAry(tree.treeAry), prevAry(tree.prevAry), leafSet(tree.leafSet), prevLeafSet(tree.prevLeafSet)
+{
+}
+
 vector<short> TreeArray::getCodeArray()
 {
     return treeAry;

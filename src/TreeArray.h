@@ -18,6 +18,7 @@ private:
 
 public:
     TreeArray(int numLeaf);
+    TreeArray(const TreeArray &tree);
     vector<short> getCodeArray();
     friend ostream &operator<<(ostream &os, const TreeArray &tree);
 

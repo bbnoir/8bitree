@@ -16,13 +16,15 @@ int main(int argc, char *argv[])
 
     Config config = {
         .filePath = argv[1],
-        .maxIter = 10,
+        .maxIter = 300,
         .T = 1000,
         .Rt = 0.99,
     };
 
+    cout << "Input file: " << argv[1] << endl;
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
     sa->run();
+    sa->show();
 
     return EXIT_SUCCESS;
 }

@@ -1,5 +1,5 @@
 # tool macros
-CXXFLAGS += -std=c++11 -O1
+CXXFLAGS += -std=c++11 -O3 -fopenmp -mavx2 
 DBGFLAGS := -g
 CCOBJFLAGS := $(CXXFLAGS) -c
 

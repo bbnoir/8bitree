@@ -131,55 +131,6 @@ map<int, string> Encoder::genCanonCode()
     return canonCode;
 }
 
-map<int, string> Encoder::genCanonCode(vector<int> codeLength)
-{
-    // Check basic validity
-    if (codeLength.size() < 2)
-        throw std::invalid_argument("At least 2 symbols needed");
-    if (codeLength.size() > UINT32_MAX)
-        throw std::length_error("Too many symbols");
-    checkTreeValid(codeLength);
-    // sort the codeLength map by value
-    vector<pair<int, int>> sortedCodeLength = sort(codeLength);
-    map<int, string> canonCode;
-    int prevCode = -1;
-    int currCode = -1;
-    string currCodeStr = "";
-    int key = 0;
-    int len = 0;
-    int prevLen = 0;
-    for (auto i = sortedCodeLength.begin(); i != sortedCodeLength.end(); i++)
-    {
-        key = i->first;
-        len = i->second;
-        if (len == 0)
-        {
-            canonCode[key] = "";
-            continue;
-        }
-        if (prevCode == -1)
-        {
-            currCode = 0;
-        }
-        else
-        {
-            currCode = prevCode;
-            if (prevLen == len)
-            {
-                currCode++;
-            }
-            else
-            {
-                currCode = 2 * (currCode + 1);
-            }
-        }
-        canonCode[key] = bitset<40>(currCode).to_string().substr(40 - len, len);
-        prevCode = currCode;
-        prevLen = len;
-    }
-    return canonCode;
-}
-
 void Encoder::encode(string outputFileName)
 {
     ofstream out(outputFileName);
@@ -200,4 +151,21 @@ void Encoder::encode(string outputFileName)
         out << endl;
     }
     out.close();
+}
+
+int Encoder::getMaxWidth()
+{
+    genCodeLength();
+    vector<int> result(dl->getNumLines(), 0);
+    int numLines = dl->getNumLines();
+    int intPerLine = dl->getIntPerLine();
+    // #pragma omp parallel if (dl->getNumBytes() > 16000000)
+    //     {
+    // #pragma omp for
+    for (int i = 0; i < numLines; i++)
+        for (int j = 0; j < intPerLine; j++)
+            result[i] += codeLength[dl->getDataAry()[i][j] - SYM_MIN];
+    // }
+
+    return *max_element(result.begin(), result.end());
 }

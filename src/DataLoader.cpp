@@ -37,8 +37,6 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     }
     intPerLine = *(int *)addr;
     numLines = *((int *)addr + 1);
-    cout << "intPerLine: " << intPerLine << endl;
-    cout << "numLines: " << numLines << endl;
     int8 *cur = (int8 *)(addr + 2 * sizeof(int));
     dataAry = vector<vector<int8>>(numLines, vector<int8>(intPerLine, 0));
     int8 num = 0;
@@ -77,6 +75,11 @@ int DataLoader::getNumLines()
 int DataLoader::getIntPerLine()
 {
     return intPerLine;
+}
+
+int DataLoader::getNumBytes()
+{
+    return numBytes;
 }
 
 const vector<vector<int8>> &DataLoader::getDataAry()

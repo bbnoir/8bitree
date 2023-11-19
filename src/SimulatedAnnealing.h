@@ -1,6 +1,7 @@
 #pragma once
 #include "DataLoader.h"
 #include "TreeArray.h"
+#include "Encoder.h"
 
 using namespace std;
 
@@ -19,11 +20,16 @@ private:
     // config data
     DataLoader *dl;
     TreeArray *tree;
+    Encoder *encoder;
+    TreeArray *bestTree;
+
+    int minMaxWidth;
+
     const int maxIter = 10;
     double T = 1000;
     double Rt = 0.99;
+
     // utility functions
-    vector<int> genCodeLength();
 
 public:
     // constructor
@@ -31,6 +37,4 @@ public:
     int run();
     void show();
     Config *config;
-
-    int getMaxWidth();
 };
