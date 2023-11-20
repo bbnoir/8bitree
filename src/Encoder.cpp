@@ -9,11 +9,33 @@
 
 using namespace std;
 
-Encoder::Encoder(DataLoader *dl, TreeArray *tree) : dl(dl), tree(tree) {}
-
-vector<int> Encoder::genCodeLength()
+Encoder::Encoder(DataLoader *dl, TreeArray *tree) : dl(dl), tree(tree), codeLength(cl_FQ)
 {
-    codeLength = vector<int>(SYM_NUM, 0);
+    bestWidth = INFINITY;
+    bestWay = -1;
+    cl_FQ = vector<int>(SYM_NUM, 0);
+    cl_EX = vector<int>(SYM_NUM, 0);
+    cl_OC = vector<int>(SYM_NUM, 0);
+}
+
+int Encoder::getMaxWidth(vector<int> lenghtTable)
+{
+    int numLines = dl->getNumLines();
+    int intPerLine = dl->getIntPerLine();
+    vector<int> result(numLines, 0);
+#pragma omp parallel if (dl->getNumBytes() > 16000000)
+    {
+#pragma omp for
+        for (int i = 0; i < numLines; i++)
+            for (int j = 0; j < intPerLine; j++)
+                result[i] += lenghtTable[dl->getDataAry()[i][j] - SYM_MIN];
+    }
+    return *max_element(result.begin(), result.end());
+}
+
+int Encoder::genCodeLength_FQ()
+{
+    cl_FQ = vector<int>(SYM_NUM, 0);
     vector<int> freqMap = dl->getFreqMap();
     // sort the freqMap based on the frequency
     vector<pair<int, int8>> freqMapWithIndex;
@@ -36,8 +58,104 @@ vector<int> Encoder::genCodeLength()
         treeAry[cl]--;
     }
     for (int i = 0; i < SYM_NUM; i++)
-        codeLength[i] = lengthTable[i];
-    return codeLength;
+        cl_FQ[i] = lengthTable[i];
+    return getMaxWidth(cl_FQ);
+}
+
+int Encoder::genCodeLength_EX()
+{
+    cl_EX = vector<int>(SYM_NUM, 0);
+    vector<pairInt> EXmap = dl->getExtremumMap();
+    // sort the EXmap based on the max times of occurence
+    vector<pair<pairInt, int8>> extendedMapWithIndex;
+    // <occurence, number>
+    for (int i = 0; i < SYM_NUM; i++)
+        extendedMapWithIndex.push_back(make_pair(EXmap[i], (int8)i));
+    sort(extendedMapWithIndex.begin(), extendedMapWithIndex.end(), [](pair<pairInt, int8> a, pair<pairInt, int8> b)
+         {
+        if(a.first.first == b.first.first)
+            return a.first.second > b.first.second;
+        return a.first.first > b.first.first; });
+
+    // build the table
+    unordered_map<int8, int> lengthTable;
+    // progressBar(i+1, trees.size());
+    vector<short> treeAry = tree->getCodeArray();
+    // [nums of 0 bits code, nums of 1 bits code, ...] sum = 16
+    int cl = 0;
+    // let higher occurence symbol have shorter code length
+    for (int j = 0; j < dl->getNumInts(); j++)
+    {
+        while (!treeAry[cl])
+            cl++;
+        lengthTable[extendedMapWithIndex[j].second] = cl;
+        treeAry[cl]--;
+    }
+    for (int i = 0; i < SYM_NUM; i++)
+        cl_EX[i] = lengthTable[i];
+    return getMaxWidth(cl_EX);
+}
+
+int Encoder::genCodeLength_OC()
+{
+    cl_OC = vector<int>(SYM_NUM, 0);
+    vector<pairInt> OCmap = dl->getOccurenceMap();
+    // sort the OCmap based on the times of occurence
+    vector<pair<pairInt, int8>> occurenceMapWithIndex;
+    // <occurence, number>
+    for (int i = 0; i < SYM_NUM; i++)
+        occurenceMapWithIndex.push_back(make_pair(OCmap[i], (int8)i));
+    sort(occurenceMapWithIndex.begin(), occurenceMapWithIndex.end(), [](pair<pairInt, int8> a, pair<pairInt, int8> b)
+         {
+        if(a.first.first == b.first.first)
+            return a.first.second < b.first.second;
+        return a.first.first > b.first.first; });
+
+    // build the table
+    unordered_map<int8, int> lengthTable;
+    // progressBar(i+1, trees.size());
+    vector<short> treeAry = tree->getCodeArray();
+    // [nums of 0 bits code, nums of 1 bits code, ...] sum = 16
+    int cl = 0;
+    // let higher occurence symbol have shorter code length
+    for (int j = 0; j < dl->getNumInts(); j++)
+    {
+        while (!treeAry[cl])
+            cl++;
+        lengthTable[occurenceMapWithIndex[j].second] = cl;
+        treeAry[cl]--;
+    }
+    for (int i = 0; i < SYM_NUM; i++)
+        cl_OC[i] = lengthTable[i];
+    return getMaxWidth(cl_OC);
+}
+
+int Encoder::genCodeLength()
+{
+    bestWidth = INFINITY;
+    int width;
+    width = genCodeLength_FQ();
+    if (width < bestWidth)
+    {
+        bestWidth = width;
+        codeLength = cl_FQ;
+        bestWay = FQ;
+    }
+    width = genCodeLength_EX();
+    if (width < bestWidth)
+    {
+        bestWidth = width;
+        codeLength = cl_EX;
+        bestWay = EX;
+    }
+    width = genCodeLength_OC();
+    if (width < bestWidth)
+    {
+        bestWidth = width;
+        codeLength = cl_OC;
+        bestWay = OC;
+    }
+    return bestWidth;
 }
 
 bool cmp(const pair<int, int> &a, const pair<int, int> &b)
@@ -145,7 +263,7 @@ void Encoder::encode(string outputFileName)
     int intPerLine = dl->getIntPerLine();
     for (int i = 0; i < numLines; i++)
     {
-        progressBar("Encode", i, numLines - 1);
+        // progressBar("Encode", i, numLines - 1);
         for (int j = 0; j < intPerLine; j++)
             out << canonCode[dl->getDataAry()[i][j]];
         out << endl;
@@ -153,19 +271,13 @@ void Encoder::encode(string outputFileName)
     out.close();
 }
 
-int Encoder::getMaxWidth()
+int Encoder::getBestWidth()
 {
-    genCodeLength();
-    vector<int> result(dl->getNumLines(), 0);
-    int numLines = dl->getNumLines();
-    int intPerLine = dl->getIntPerLine();
-#pragma omp parallel if (dl->getNumBytes() > 16000000)
-    {
-#pragma omp for
-        for (int i = 0; i < numLines; i++)
-            for (int j = 0; j < intPerLine; j++)
-                result[i] += codeLength[dl->getDataAry()[i][j] - SYM_MIN];
-    }
+    bestWidth = genCodeLength();
+    return bestWidth;
+}
 
-    return *max_element(result.begin(), result.end());
+int Encoder::getBestWay()
+{
+    return bestWay;
 }

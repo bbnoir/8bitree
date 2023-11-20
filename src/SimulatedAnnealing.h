@@ -9,6 +9,7 @@ struct Config
 {
     string filePath; // Path to input data
     int maxIter;     // Maximum number of iterations
+    int stallIter;   // Maximum number of iterations without improvement
     double T;        // Initial temperature
     double Rt;       // Temperature reduction rate
     int modRate;     // Modification rate
@@ -17,9 +18,10 @@ struct Config
 class SimulatedAnnealing
 {
 
-private:
+public:
     // config data
     int minMaxWidth;
+    int balanceWidth;
     const int maxIter = 10;
     double T = 1000;
     double Rt = 0.99;
@@ -32,6 +34,7 @@ public:
     SimulatedAnnealing(Config *config);
     int run();
     void show();
+    void show_compress_ratio();
     Config *config;
     DataLoader *dl;
     TreeArray *tree;

@@ -15,3 +15,5 @@
 using namespace std;
 
 bool verify(DataLoader *dl, string decodedFileName);
+
+bool verify_quiet(DataLoader *dl, string decodedFileName);

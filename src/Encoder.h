@@ -8,18 +8,36 @@
 
 using namespace std;
 
+enum way
+{
+    FQ,
+    EX,
+    OC
+};
+
 class Encoder
 {
 private:
-    vector<int> codeLength;
     map<int, string> canonCode;
+    int bestWidth;
+    int bestWay;
+
+    vector<int> &codeLength;
+    vector<int> cl_FQ;
+    vector<int> cl_EX;
+    vector<int> cl_OC;
 
 public:
     DataLoader *dl;
     TreeArray *tree;
     Encoder(DataLoader *dl, TreeArray *tree);
-    vector<int> genCodeLength();
+    int getMaxWidth(vector<int> lenghtTable);
+    int genCodeLength();
+    int genCodeLength_FQ();
+    int genCodeLength_EX();
+    int genCodeLength_OC();
     map<int, string> genCanonCode();
     void encode(string outputFileName);
-    int getMaxWidth();
+    int getBestWidth();
+    int getBestWay();
 };

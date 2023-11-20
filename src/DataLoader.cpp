@@ -9,12 +9,32 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-using namespace std;
+int getMaxIndex(const vector<short> &freqMap)
+{
+    int maxIndex = 0;
+    for (int i = 0; i < freqMap.size(); i++)
+        if (freqMap[i] > freqMap[maxIndex])
+            maxIndex = i;
+    return maxIndex;
+}
+
+int getMinIndex(const vector<short> &freqMap)
+{
+    int minIndex = 0;
+    for (int i = 0; i < freqMap.size(); i++)
+        if (freqMap[i] < freqMap[minIndex])
+            minIndex = i;
+    return minIndex;
+}
 
 DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(128), numInts(0)
 {
+    // cal execution time
+    auto start = chrono::high_resolution_clock::now();
     this->filePath = filePath;
     freqMap = vector<int>(SYM_NUM, 0);
+    occurenceMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
+    extremumMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
     // read data using mmap
     int fd = open(filePath.c_str(), O_RDONLY);
     if (fd == -1)
@@ -42,12 +62,25 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     int8 num = 0;
     for (int i = 0; i < numLines; i++)
     {
-        progressBar("Loading data", i, numLines - 1);
+        // progressBar("Loading data", i, numLines - 1);
+        vector<short> tmpFreqMap(SYM_NUM, 0);
         for (int j = 0; j < intPerLine; j++)
         {
             num = *(cur++);
             dataAry[i][j] = num;
             freqMap[num + 128]++;
+            tmpFreqMap[num + 128]++;
+        }
+        int maxIndex = getMaxIndex(tmpFreqMap);
+        int minIndex = getMinIndex(tmpFreqMap);
+        occurenceMap[maxIndex].first++;
+        occurenceMap[minIndex].second++;
+        for (int i = 0; i < extremumMap.size(); i++)
+        {
+            if (tmpFreqMap[i] > extremumMap[i].first)
+                extremumMap[i].first = tmpFreqMap[i];
+            if (tmpFreqMap[i] < extremumMap[i].second)
+                extremumMap[i].second = tmpFreqMap[i];
         }
     }
     munmap(addr, length);
@@ -55,11 +88,17 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     for (int i = 0; i < 256; i++)
     {
         if (freqMap[i] > 0)
-        {
             numInts++;
+        else
+        {
+            occurenceMap[i].first = INT32_MIN;
+            occurenceMap[i].second = INT32_MAX;
         }
     }
     numBytes = numLines * intPerLine;
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+    cout << "data loaded in " << duration.count() << "ms" << endl;
 }
 
 int DataLoader::getNumInts()
@@ -90,6 +129,16 @@ const vector<vector<int8>> &DataLoader::getDataAry()
 vector<int> DataLoader::getFreqMap()
 {
     return freqMap;
+}
+
+vector<pairInt> DataLoader::getOccurenceMap()
+{
+    return occurenceMap;
+}
+
+vector<pairInt> DataLoader::getExtremumMap()
+{
+    return extremumMap;
 }
 
 ostream &operator<<(ostream &os, const DataLoader &dl)

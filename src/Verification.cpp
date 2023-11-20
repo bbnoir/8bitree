@@ -32,7 +32,7 @@ bool verify(DataLoader *dl, string decodedFileName)
                  << "\033[0m" << endl;
             cout << "Data line: ";
             for (int i = 0; i < intPerLine; i++)
-                cout << dl->getDataAry()[curline - 1][i] << " ";
+                cout << (int)dl->getDataAry()[curline - 1][i] << " ";
             cout << endl;
             cout << "Decoded line: " << decodedLine << endl;
             cout << endl;
@@ -60,5 +60,31 @@ bool verify(DataLoader *dl, string decodedFileName)
     cout << "\033[32m"
          << "     === Verification passed ==="
          << "\033[0m" << endl;
+    return true;
+}
+
+bool verify_quiet(DataLoader *dl, string decodedFileName)
+{
+    ifstream decodedFile(decodedFileName);
+    string decodedLine;
+    int curline = 0;
+    int intPerLine = dl->getIntPerLine();
+    int numLines = dl->getNumLines();
+    while (getline(decodedFile, decodedLine))
+    {
+        curline++;
+        stringstream ss(decodedLine);
+        int n;
+        for (int i = 0; i < intPerLine; i++)
+        {
+            ss >> n;
+            if (n != dl->getDataAry()[curline - 1][i])
+                return false;
+        }
+    }
+    if (decodedFile.peek() != EOF)
+        return false;
+    if (curline != numLines)
+        return false;
     return true;
 }
