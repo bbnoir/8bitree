@@ -32,7 +32,7 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     // cal execution time
     auto start = chrono::high_resolution_clock::now();
     this->filePath = filePath;
-    freqMap = vector<int>(SYM_NUM, 0);
+    freqMap = vector<unsigned int>(SYM_NUM, 0);
     occurenceMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
     extremumMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
     // read data using mmap
@@ -68,7 +68,8 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
         {
             num = *(cur++);
             dataAry[i][j] = num;
-            freqMap[num + 128]++;
+            if (freqMap[num + 128] != UINT32_MAX)
+                freqMap[num + 128]++;
             tmpFreqMap[num + 128]++;
         }
         int maxIndex = getMaxIndex(tmpFreqMap);
@@ -87,7 +88,7 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     close(fd);
     for (int i = 0; i < 256; i++)
     {
-        if (freqMap[i] > 0)
+        if (freqMap[i] != 0)
             numInts++;
         else
         {
@@ -126,7 +127,7 @@ const vector<vector<int8>> &DataLoader::getDataAry()
     return dataAry;
 }
 
-vector<int> DataLoader::getFreqMap()
+vector<unsigned int> DataLoader::getFreqMap()
 {
     return freqMap;
 }

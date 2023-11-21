@@ -23,7 +23,7 @@ int Encoder::getMaxWidth(vector<int> lenghtTable)
     int numLines = dl->getNumLines();
     int intPerLine = dl->getIntPerLine();
     vector<int> result(numLines, 0);
-#pragma omp parallel if (dl->getNumBytes() > 16000000)
+#pragma omp parallel if (dl->getNumBytes() > 16000000) num_threads(12)
     {
 #pragma omp for
         for (int i = 0; i < numLines; i++)
@@ -36,7 +36,7 @@ int Encoder::getMaxWidth(vector<int> lenghtTable)
 int Encoder::genCodeLength_FQ()
 {
     cl_FQ = vector<int>(SYM_NUM, 0);
-    vector<int> freqMap = dl->getFreqMap();
+    vector<unsigned int> freqMap = dl->getFreqMap();
     // sort the freqMap based on the frequency
     vector<pair<int, int8>> freqMapWithIndex;
     // <frequency, number>

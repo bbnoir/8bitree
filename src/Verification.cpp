@@ -79,12 +79,38 @@ bool verify_quiet(DataLoader *dl, string decodedFileName)
         {
             ss >> n;
             if (n != dl->getDataAry()[curline - 1][i])
+            {
+                cout << endl;
+                cout << "\033[31m"
+                     << "     === Verification failed at line " << curline << " ==="
+                     << "\033[0m" << endl;
+                cout << "Data line: ";
+                for (int i = 0; i < intPerLine; i++)
+                    cout << (int)dl->getDataAry()[curline - 1][i] << " ";
+                cout << endl;
+                cout << "Decoded line: " << decodedLine << endl;
+                cout << endl;
                 return false;
+            }
         }
     }
     if (decodedFile.peek() != EOF)
+    {
+        cout << endl;
+        cout << "\033[31m"
+             << "     === Verification failed: Decoded file has more lines than data file ==="
+             << "\033[0m" << endl;
+        cout << endl;
         return false;
+    }
     if (curline != numLines)
+    {
+        cout << endl;
+        cout << "\033[31m"
+             << "     === Verification failed: Data file has more lines than decoded file ==="
+             << "\033[0m" << endl;
+        cout << endl;
         return false;
+    }
     return true;
 }

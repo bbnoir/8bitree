@@ -17,7 +17,7 @@ private:
     int numLines;
     int intPerLine; // number of elements per line
     int numInts;    // number of integers occured in the data
-    vector<int> freqMap;
+    vector<unsigned int> freqMap;
     vector<pairInt> occurenceMap;
     vector<pairInt> extremumMap;
 
@@ -28,7 +28,7 @@ public:
     int getIntPerLine();
     int getNumBytes();
     const vector<vector<int8>> &getDataAry();
-    vector<int> getFreqMap();
+    vector<unsigned int> getFreqMap();
     vector<pairInt> getOccurenceMap();
     vector<pairInt> getExtremumMap();
     friend ostream &operator<<(ostream &os, const DataLoader &dl);

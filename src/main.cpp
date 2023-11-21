@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
         .Rt = 0.999,
         .modRate = 1000};
 
-    cout << "\033[1m";
+    // cout << "\033[1m";
     cout << "Data: " << config.filePath << endl;
-    cout << "\033[0m";
+    // cout << "\033[0m";
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
     sa->run();
     // sa->show();
