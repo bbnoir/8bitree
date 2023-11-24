@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-int getMaxIndex(const vector<short> &freqMap)
+int getMaxIndex(const vector<int> &freqMap)
 {
     int maxIndex = 0;
     for (int i = 0; i < freqMap.size(); i++)
@@ -18,7 +18,7 @@ int getMaxIndex(const vector<short> &freqMap)
     return maxIndex;
 }
 
-int getMinIndex(const vector<short> &freqMap)
+int getMinIndex(const vector<int> &freqMap)
 {
     int minIndex = 0;
     for (int i = 0; i < freqMap.size(); i++)
@@ -32,7 +32,7 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     // cal execution time
     auto start = chrono::high_resolution_clock::now();
     this->filePath = filePath;
-    freqMap = vector<unsigned int>(SYM_NUM, 0);
+    freqMap = vector<freq_t>(SYM_NUM, 0);
     occurenceMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
     extremumMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
     // read data using mmap
@@ -63,12 +63,12 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     for (int i = 0; i < numLines; i++)
     {
         // progressBar("Loading data", i, numLines - 1);
-        vector<short> tmpFreqMap(SYM_NUM, 0);
+        vector<int> tmpFreqMap(SYM_NUM, 0);
         for (int j = 0; j < intPerLine; j++)
         {
             num = *(cur++);
             dataAry[i][j] = num;
-            if (freqMap[num + 128] != UINT32_MAX)
+            if (freqMap[num + 128] != FREQ_MAX)
                 freqMap[num + 128]++;
             tmpFreqMap[num + 128]++;
         }
@@ -86,7 +86,7 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
     }
     munmap(addr, length);
     close(fd);
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < SYM_NUM; i++)
     {
         if (freqMap[i] != 0)
             numInts++;

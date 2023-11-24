@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 
+#define THREAD_NUM 8
+
 using namespace std;
 
 Encoder::Encoder(DataLoader *dl, TreeArray *tree) : dl(dl), tree(tree), codeLength(cl_FQ)
@@ -23,26 +25,23 @@ int Encoder::getMaxWidth(vector<int> lenghtTable)
     int numLines = dl->getNumLines();
     int intPerLine = dl->getIntPerLine();
     vector<int> result(numLines, 0);
-#pragma omp parallel if (dl->getNumBytes() > 16000000) num_threads(12)
-    {
-#pragma omp for
-        for (int i = 0; i < numLines; i++)
-            for (int j = 0; j < intPerLine; j++)
-                result[i] += lenghtTable[dl->getDataAry()[i][j] - SYM_MIN];
-    }
+#pragma omp parallel for num_threads(THREAD_NUM)
+    for (int i = 0; i < numLines; i++)
+        for (int j = 0; j < intPerLine; j++)
+            result[i] += lenghtTable[dl->getDataAry()[i][j] - SYM_MIN];
     return *max_element(result.begin(), result.end());
 }
 
 int Encoder::genCodeLength_FQ()
 {
     cl_FQ = vector<int>(SYM_NUM, 0);
-    vector<unsigned int> freqMap = dl->getFreqMap();
+    vector<freq_t> freqMap = dl->getFreqMap();
     // sort the freqMap based on the frequency
-    vector<pair<int, int8>> freqMapWithIndex;
+    vector<pair<freq_t, int8>> freqMapWithIndex;
     // <frequency, number>
     for (int i = 0; i < SYM_NUM; i++)
         freqMapWithIndex.push_back(make_pair(freqMap[i], (int8)i));
-    sort(freqMapWithIndex.begin(), freqMapWithIndex.end(), [](pair<int, int8> a, pair<int, int8> b)
+    sort(freqMapWithIndex.begin(), freqMapWithIndex.end(), [](pair<freq_t, int8> a, pair<freq_t, int8> b)
          { return a.first > b.first; });
     // build the table
     unordered_map<int8, int> lengthTable;

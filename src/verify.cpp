@@ -22,27 +22,45 @@ int main(int argc, char *argv[])
     cout << "\033[0m";
 
     // load data
+    cout << "Loading data..." << endl;
     DataLoader *dl = new DataLoader(dataFileName);
 
     // setup tree array based on data
-    cout << "Generating tree array..." << endl;
+    // cout << "Generating tree array..." << endl;
     // TreeArray *tree = TreeArray::genHuffmanArray(dl);
-    cout << "numInts: " << dl->getNumInts() << endl;
+    // cout << "numInts: " << dl->getNumInts() << endl;
     TreeArray *tree = new TreeArray(dl->getNumInts());
     srand(time(NULL));
     // tree->modify(rand() % 30000);
-    cout << "Tree array: " << *tree << endl;
+    // cout << "Tree array: " << *tree << endl;
 
     // encode data based on tree array
-    Encoder encoder(dl, tree);
-    encoder.encode(encodedFileName);
+    cout << "Encoding data..." << endl;
+    auto start = chrono::high_resolution_clock::now();
+    Encoder *encoder = new Encoder(dl, tree);
+    encoder->encode(encodedFileName);
+    delete encoder;
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+    cout << "Data encoded in " << duration.count() << " ms" << endl;
 
     // decode data
-    Decoder decoder(encodedFileName, decodedFileName);
-    decoder.decode(dl->getNumLines());
+    cout << "Decoding data..." << endl;
+    auto start2 = chrono::high_resolution_clock::now();
+    Decoder *decoder = new Decoder(encodedFileName, decodedFileName);
+    decoder->decode(dl->getNumLines());
+    delete decoder;
+    auto stop2 = chrono::high_resolution_clock::now();
+    auto duration2 = chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
+    cout << "Data decoded in " << duration2.count() << " ms" << endl;
 
     // verify
+    cout << "Verifying..." << endl;
+    auto start3 = chrono::high_resolution_clock::now();
     bool success = verify(dl, decodedFileName);
+    auto stop3 = chrono::high_resolution_clock::now();
+    auto duration3 = chrono::duration_cast<chrono::milliseconds>(stop3 - start3);
+    cout << "Data verified in " << duration3.count() << " ms" << endl;
 
     // clean up
     if (clean)

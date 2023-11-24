@@ -49,7 +49,7 @@ else
     elif [ ! -z "$foldername" ] && [ -z "$execute_all" ]; then
         for file in "$foldername"/*; do
             if [[ "$file" != *"decoded"* && "$file" != *"encoded"* ]]; then
-                ./bin/main "$file" verify
+                time ./bin/main "$file" verify
             fi
         done
     else
