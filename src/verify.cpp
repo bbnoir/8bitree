@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
     // cout << "Tree array: " << *tree << endl;
 
     // encode data based on tree array
-    cout << "Encoding data..." << endl;
     auto start = chrono::high_resolution_clock::now();
     Encoder *encoder = new Encoder(dl, tree);
     encoder->encode(encodedFileName);
@@ -45,22 +44,21 @@ int main(int argc, char *argv[])
     cout << "Data encoded in " << duration.count() << " ms" << endl;
 
     // decode data
-    cout << "Decoding data..." << endl;
     auto start2 = chrono::high_resolution_clock::now();
     Decoder *decoder = new Decoder(encodedFileName, decodedFileName);
-    decoder->decode(dl->getNumLines());
+    decoder->decode();
     delete decoder;
     auto stop2 = chrono::high_resolution_clock::now();
     auto duration2 = chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
     cout << "Data decoded in " << duration2.count() << " ms" << endl;
 
     // verify
-    cout << "Verifying..." << endl;
     auto start3 = chrono::high_resolution_clock::now();
-    bool success = verify(dl, decodedFileName);
+    bool success = verify_quiet(dl, decodedFileName);
     auto stop3 = chrono::high_resolution_clock::now();
     auto duration3 = chrono::duration_cast<chrono::milliseconds>(stop3 - start3);
     cout << "Data verified in " << duration3.count() << " ms" << endl;
+    cout << endl;
 
     // clean up
     if (clean)
