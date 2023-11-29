@@ -1,4 +1,7 @@
 #include "Verification.h"
+#include "sys/mman.h"
+#include "sys/stat.h"
+#include "fcntl.h"
 
 using namespace std;
 
@@ -112,5 +115,81 @@ bool verify_quiet(DataLoader *dl, string decodedFileName)
         cout << endl;
         return false;
     }
+    return true;
+}
+
+bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
+{
+    int fd = open(decodedFileName.c_str(), O_RDONLY);
+    if (fd == -1)
+    {
+        cout << "Error: can't open file" << endl;
+        exit(1);
+    }
+    struct stat sb;
+    if (fstat(fd, &sb) == -1)
+    {
+        cout << "Error: can't get file size" << endl;
+        exit(1);
+    }
+    size_t length = sb.st_size;
+    int8 *addr = (int8 *)mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (addr == MAP_FAILED)
+    {
+        cout << "Error: mmap failed" << endl;
+        exit(1);
+    }
+    int intPerLine = *(int *)addr;
+    int numLines = *((int *)addr + 1);
+    if (intPerLine != dl->getIntPerLine())
+    {
+        cout << endl;
+        cout << "\033[31m"
+             << "     === Verification failed: Decoded file has different intPerLine ==="
+             << "\033[0m" << endl;
+        cout << endl;
+        return false;
+    }
+    if (numLines != dl->getNumLines())
+    {
+        cout << endl;
+        cout << "\033[31m"
+             << "     === Verification failed: Decoded file has different numLines ==="
+             << "\033[0m" << endl;
+        cout << endl;
+        return false;
+    }
+    int8 *cur = (int8 *)(addr + 2 * sizeof(int));
+    bool diff = false;
+    for (int i = 0; i < numLines; i++)
+    {
+        for (int j = 0; j < intPerLine; j++)
+        {
+            if (*(cur++) != dl->getDataAry()[i][j])
+            {
+                diff = true;
+            }
+        }
+        if (diff)
+        {
+            cout << endl;
+            cout << "\033[31m"
+                 << "     === Verification failed at line " << i + 1 << " ==="
+                 << "\033[0m" << endl;
+            cout << endl;
+            cout << "Data line: ";
+            for (int j = 0; j < intPerLine; j++)
+                cout << (int)dl->getDataAry()[i][j] << " ";
+            cout << endl;
+            cout << "Decoded line: ";
+            for (int j = 0; j < intPerLine; j++)
+                cout << (int)*(cur - intPerLine + j) << " ";
+            cout << endl;
+            return false;
+        }
+    }
+    cout << "\033[32m"
+         << "     === Verification passed ==="
+         << "\033[0m" << endl;
     return true;
 }

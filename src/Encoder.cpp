@@ -1,5 +1,6 @@
 #include "Encoder.h"
 #include "Constants.h"
+#include "BitStream.h"
 #include "Utils.h"
 #include <algorithm>
 #include <iostream>
@@ -206,7 +207,7 @@ bool checkTreeValid(vector<int> codeLengths)
     return true;
 }
 
-map<int, string> Encoder::genCanonCode()
+map<int, pair<int, int>> Encoder::genCanonCode()
 {
     // Check basic validity
     if (codeLength.size() < 2)
@@ -216,7 +217,7 @@ map<int, string> Encoder::genCanonCode()
     checkTreeValid(codeLength);
     // sort the codeLength map by value
     vector<pair<int, int>> sortedCodeLength = sort(codeLength);
-    map<int, string> canonCode;
+    map<int, pair<int, int>> canonCode;
     int prevCode = -1;
     int currCode = -1;
     string currCodeStr = "";
@@ -230,7 +231,8 @@ map<int, string> Encoder::genCanonCode()
         len = i->second;
         if (len == 0)
         {
-            canonCode[key] = "";
+            canonCode[key].first = 0;
+            canonCode[key].second = 0;
             continue;
         }
         if (prevCode == -1)
@@ -241,7 +243,8 @@ map<int, string> Encoder::genCanonCode()
         {
             currCode = (prevCode + 1) << (len - prevLen);
         }
-        canonCode[key] = bitset<40>(currCode).to_string().substr(40 - len, len);
+        canonCode[key].first = currCode;
+        canonCode[key].second = len;
         prevCode = currCode;
         prevLen = len;
     }
@@ -250,24 +253,24 @@ map<int, string> Encoder::genCanonCode()
 
 void Encoder::encode(string outputFileName)
 {
-    ofstream out(outputFileName);
+    BitOutputStream out(outputFileName);
+    int intPerLine = dl->getIntPerLine();
+    int numLines = dl->getNumLines();
+    out.writeInt(intPerLine);
+    out.writeInt(numLines);
     genCodeLength();
     // write the code length
     for (int i = 0; i < SYM_NUM; i++)
-        out << codeLength[i] << " ";
-    out << endl;
+        out.writeInt(codeLength[i]);
     // write the code
-    map<int, string> canonCode = genCanonCode();
-    int numLines = dl->getNumLines();
-    int intPerLine = dl->getIntPerLine();
+    map<int, pair<int, int>> canonCode = genCanonCode();
     for (int i = 0; i < numLines; i++)
     {
-        // progressBar("Encode", i, numLines - 1);
         for (int j = 0; j < intPerLine; j++)
-            out << canonCode[dl->getDataAry()[i][j]];
-        out << endl;
+        {
+            out.writeCode(canonCode[dl->getDataAry()[i][j]].first, canonCode[dl->getDataAry()[i][j]].second);
+        }
     }
-    out.close();
 }
 
 int Encoder::getBestWidth()

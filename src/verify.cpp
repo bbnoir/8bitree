@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     string dataFileName = argv[1];
-    string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.txt";
-    string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.txt";
+    string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.bin";
+    string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.bin";
 
     bool clean = true;
     if (argc == 3 && string(argv[2]) == "noclean")
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     // TreeArray *tree = TreeArray::genHuffmanArray(dl);
     // cout << "numInts: " << dl->getNumInts() << endl;
     TreeArray *tree = new TreeArray(dl->getNumInts());
-    srand(time(NULL));
+    // srand(time(NULL));
     // tree->modify(rand() % 30000);
     // cout << "Tree array: " << *tree << endl;
 
@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
     // decode data
     auto start2 = chrono::high_resolution_clock::now();
     Decoder *decoder = new Decoder(encodedFileName, decodedFileName);
-    decoder->decode();
+    // decoder->decode();
+    decoder->decode(dl);
     delete decoder;
     auto stop2 = chrono::high_resolution_clock::now();
     auto duration2 = chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
 
     // verify
     auto start3 = chrono::high_resolution_clock::now();
-    bool success = verify_quiet(dl, decodedFileName);
+    bool success = verify_bin_quiet(dl, decodedFileName);
     auto stop3 = chrono::high_resolution_clock::now();
     auto duration3 = chrono::duration_cast<chrono::milliseconds>(stop3 - start3);
     cout << "Data verified in " << duration3.count() << " ms" << endl;

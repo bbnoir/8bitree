@@ -1,8 +1,12 @@
 #pragma once
 #include "CodeTree.h"
+#include "BitStream.h"
+#include "Constants.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
+
+#include "DataLoader.h"
 
 using namespace std;
 
@@ -15,17 +19,18 @@ class Decoder final
 {
 
 private:
-    ifstream in;
+    BitInputStream in;
     ofstream out;
+    int intPerLine;
+    int numLines;
     const CodeTree *codeTree;
     // helper for generating CodeTree
     CodeTree *CanonicalToCodeTree(vector<int> codeLengths);
-    string readline();
-    bool notEOF();
+    int8_t decodeOne();
 
 public:
     explicit Decoder(string encodedFileName, string decodedFileName);
     void decode();
-    void decode(int numLines);
+    void decode(DataLoader *dl);
     int max_line_width;
 };

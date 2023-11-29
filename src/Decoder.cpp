@@ -9,13 +9,11 @@
 
 Decoder::Decoder(string encodedFileName, string decodedFileName) : in(encodedFileName), out(decodedFileName)
 {
-    vector<int> codeLengths;
-    string line;
-    getline(in, line);
-    stringstream ss(line);
-    int length;
-    while (ss >> length)
-        codeLengths.push_back(length);
+    intPerLine = in.readInt();
+    numLines = in.readInt();
+    vector<int> codeLengths(SYM_NUM, 0);
+    for (int i = 0; i < SYM_NUM; i++)
+        codeLengths[i] = in.readInt();
     codeTree = CanonicalToCodeTree(codeLengths);
     max_line_width = 0;
 }
@@ -63,64 +61,60 @@ CodeTree *Decoder::CanonicalToCodeTree(vector<int> codeLengths)
     return result;
 }
 
-string Decoder::readline()
+int8_t Decoder::decodeOne()
 {
     if (codeTree == nullptr)
         throw std::logic_error("Code tree is null");
 
     const InternalNode *currentNode = &codeTree->root;
-    string line;
-    getline(in, line);
-    max_line_width = std::max(max_line_width, static_cast<int>(line.length()));
-    stringstream ss(line);
-    char temp;
-    stringstream result;
-    while (ss >> temp)
+    while (true)
     {
+        int temp = in.readBit();
         const Node *nextNode;
-        if (temp == '0')
+        if (temp == 0)
             nextNode = currentNode->leftChild.get();
-        else if (temp == '1')
+        else if (temp == 1)
             nextNode = currentNode->rightChild.get();
         else
-            throw std::logic_error("Assertion error: Invalid value from input.get()");
+            throw std::logic_error("End of input before code completed");
 
         if (dynamic_cast<const Leaf *>(nextNode) != nullptr)
-        {
-            result << dynamic_cast<const Leaf *>(nextNode)->symbol + SYM_MIN << " ";
-            currentNode = &codeTree->root;
-        }
+            return dynamic_cast<const Leaf *>(nextNode)->symbol + SYM_MIN;
         else if (dynamic_cast<const InternalNode *>(nextNode))
             currentNode = dynamic_cast<const InternalNode *>(nextNode);
         else
             throw std::logic_error("Assertion error: Illegal node type");
     }
-    return result.str();
-}
-
-bool Decoder::notEOF()
-{
-    return !in.eof();
 }
 
 void Decoder::decode()
 {
-    while (notEOF())
+    out.write((char *)&intPerLine, sizeof(int));
+    out.write((char *)&numLines, sizeof(int));
+    int progress = 0;
+    int8_t tmp = 0;
+    for (int i = 0; i < numLines; i++)
     {
-        out << readline();
-        if (notEOF())
-            out << endl;
+        for (int j = 0; j < intPerLine; j++)
+        {
+            tmp = decodeOne();
+            out.write((char *)&tmp, sizeof(int8_t));
+        }
     }
 }
 
-void Decoder::decode(int numLines)
+void Decoder::decode(DataLoader *dl)
 {
+    out.write((char *)&intPerLine, sizeof(int));
+    out.write((char *)&numLines, sizeof(int));
     int progress = 0;
-    while (notEOF())
+    int8_t tmp = 0;
+    for (int i = 0; i < numLines; i++)
     {
-        progressBar("Decode", progress++, numLines);
-        out << readline();
-        if (notEOF())
-            out << endl;
+        for (int j = 0; j < intPerLine; j++)
+        {
+            tmp = decodeOne();
+            out.write((char *)&tmp, sizeof(int8_t));
+        }
     }
 }
