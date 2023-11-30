@@ -26,11 +26,10 @@ private:
     const CodeTree *codeTree;
     // helper for generating CodeTree
     CodeTree *CanonicalToCodeTree(vector<int> codeLengths);
-    int8_t decodeOne();
+    int8_t decodeOne(int &line_width);
 
 public:
     explicit Decoder(string encodedFileName, string decodedFileName);
     void decode();
-    void decode(DataLoader *dl);
     int max_line_width;
 };

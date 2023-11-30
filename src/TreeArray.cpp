@@ -65,12 +65,6 @@ bool TreeArray::checkKraft()
     double sum = 0;
     for (int i = 0; i < ARRAY_SIZE; i++)
         sum += treeAry[i] * pow(2, -i);
-    // if (sum != 1)
-    // {
-    // cerr << "Error: Kraft's inequality is not satisfied" << endl;
-    // cerr << "TreeArray:" << *this << endl;
-    // exit(1);
-    // }
     return sum == 1;
 }
 
@@ -108,7 +102,7 @@ void TreeArray::modify(int times = 1)
                         leafSet.erase(idx);
                     leafSet.insert(idx - 1);
                     leafSet.insert(idx + 1);
-                    mod_success = true;
+                    mod_success = checkKraft();
                 }
                 break;
             case 1: // [-1, +3, -2]
@@ -122,7 +116,7 @@ void TreeArray::modify(int times = 1)
                     if (treeAry[idx - 1] == 0)
                         leafSet.erase(idx - 1);
                     leafSet.insert(idx);
-                    mod_success = true;
+                    mod_success = checkKraft();
                 }
                 break;
             case 2: // [+1, -2, -1, +2]
@@ -138,7 +132,7 @@ void TreeArray::modify(int times = 1)
                         leafSet.erase(idx - 1);
                     leafSet.insert(idx + 1);
                     leafSet.insert(idx - 2);
-                    mod_success = true;
+                    mod_success = checkKraft();
                 }
                 break;
             case 3: // [-1, +2, +1, -2]
@@ -154,7 +148,7 @@ void TreeArray::modify(int times = 1)
                         leafSet.erase(idx - 2);
                     leafSet.insert(idx);
                     leafSet.insert(idx - 1);
-                    mod_success = true;
+                    mod_success = checkKraft();
                 }
                 break;
             default:
@@ -162,7 +156,6 @@ void TreeArray::modify(int times = 1)
                 break;
             }
         }
-        checkKraft();
     }
     return;
 }

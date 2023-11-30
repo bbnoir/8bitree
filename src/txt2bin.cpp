@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     DataLoader *dl = new DataLoader(inputFileName);
     ofstream out(outputFileName, std::ios::binary);
 
-    int intPerLine = dl->getIntPerLine();
+    int intPerLine = dl->getElementPerLine();
     int numLines = dl->getNumLines();
 
     cout << "Writing to file..." << endl;

@@ -24,7 +24,7 @@ Encoder::Encoder(DataLoader *dl, TreeArray *tree) : dl(dl), tree(tree), codeLeng
 int Encoder::getMaxWidth(vector<int> lenghtTable)
 {
     int numLines = dl->getNumLines();
-    int intPerLine = dl->getIntPerLine();
+    int intPerLine = dl->getElementPerLine();
     vector<int> result(numLines, 0);
 #pragma omp parallel for num_threads(THREAD_NUM)
     for (int i = 0; i < numLines; i++)
@@ -253,24 +253,25 @@ map<int, pair<int, int>> Encoder::genCanonCode()
 
 void Encoder::encode(string outputFileName)
 {
-    BitOutputStream out(outputFileName);
-    int intPerLine = dl->getIntPerLine();
+    BitOutputStream *out = new BitOutputStream(outputFileName);
+    int intPerLine = dl->getElementPerLine();
     int numLines = dl->getNumLines();
-    out.writeInt(intPerLine);
-    out.writeInt(numLines);
+    out->writeInt(intPerLine);
+    out->writeInt(numLines);
     genCodeLength();
     // write the code length
     for (int i = 0; i < SYM_NUM; i++)
-        out.writeInt(codeLength[i]);
+        out->writeInt(codeLength[i]);
     // write the code
     map<int, pair<int, int>> canonCode = genCanonCode();
     for (int i = 0; i < numLines; i++)
     {
         for (int j = 0; j < intPerLine; j++)
         {
-            out.writeCode(canonCode[dl->getDataAry()[i][j]].first, canonCode[dl->getDataAry()[i][j]].second);
+            out->writeCode(canonCode[dl->getDataAry()[i][j]].first, canonCode[dl->getDataAry()[i][j]].second);
         }
     }
+    delete out;
 }
 
 int Encoder::getBestWidth()

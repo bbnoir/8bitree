@@ -25,43 +25,38 @@ int main(int argc, char *argv[])
         .Rt = 0.999,
         .modRate = 1000};
 
-    // cout << "\033[1m";
     cout << "Data: " << config.filePath << endl;
-    // cout << "\033[0m";
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
     sa->run();
     // sa->show();
     sa->show_compress_ratio();
 
-    // verify if needed
+    // verify
     if (argc >= 3 && string(argv[2]) == "verify")
     {
         string dataFileName = argv[1];
-        string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.txt";
-        string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.txt";
-
-        bool clean = true;
-        if (argc == 4 && string(argv[3]) == "noclean")
-            clean = false;
+        string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.bin";
+        string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.bin";
 
         // encode data
         sa->encoder->encode(encodedFileName);
 
         // decode data
-        Decoder decoder(encodedFileName, decodedFileName);
-        decoder.decode();
+        Decoder *decoder = new Decoder(encodedFileName, decodedFileName);
+        decoder->decode();
+        int max_line_width = decoder->max_line_width;
+        delete decoder;
 
         // verify
-        bool success = verify_quiet(sa->dl, decodedFileName);
+        bool success = verify_bin_quiet(sa->dl, decodedFileName);
 
-        // show max line width
         if (!success)
             cout << "FAILED: verification failed" << endl;
-        else if (decoder.max_line_width != sa->minMaxWidth)
+        else if (max_line_width != sa->minMaxWidth)
             cout << "FAILED: max line width mismatch" << endl;
 
         // clean up
-        if (clean)
+        if (!(argc == 4 && string(argv[3]) == "noclean"))
         {
             remove(encodedFileName.c_str());
             remove(decodedFileName.c_str());

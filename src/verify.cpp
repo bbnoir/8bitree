@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     auto start2 = chrono::high_resolution_clock::now();
     Decoder *decoder = new Decoder(encodedFileName, decodedFileName);
     // decoder->decode();
-    decoder->decode(dl);
+    decoder->decode();
     delete decoder;
     auto stop2 = chrono::high_resolution_clock::now();
     auto duration2 = chrono::duration_cast<chrono::milliseconds>(stop2 - start2);

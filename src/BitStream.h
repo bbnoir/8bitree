@@ -26,7 +26,6 @@ private:
     int nbits;
 
 public:
-    BitOutputStream(ostream &os);
     BitOutputStream(string fileName);
     ~BitOutputStream();
     void writeBit(int i);

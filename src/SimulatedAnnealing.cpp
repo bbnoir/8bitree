@@ -83,7 +83,7 @@ void SimulatedAnnealing::show()
     cout << "Result Tree Array:" << endl;
     cout << *bestTree << endl;
     cout << "=======================================================================================" << endl;
-    double initWidth = dl->getIntPerLine() * 8;
+    double initWidth = dl->getElementPerLine() * 8;
     cout << "Assignment mode: ";
     int bestWay = encoder->getBestWay();
     if (bestWay == FQ)
@@ -100,7 +100,7 @@ void SimulatedAnnealing::show()
 
 void SimulatedAnnealing::show_compress_ratio()
 {
-    double initWidth = dl->getIntPerLine() * 8;
+    double initWidth = dl->getElementPerLine() * 8;
     cout << "Integers used: " << dl->getNumInts() << "/256" << endl;
     cout << "Assignment mode: ";
     int bestWay = encoder->getBestWay();

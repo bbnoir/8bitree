@@ -10,7 +10,7 @@ bool verify(DataLoader *dl, string decodedFileName)
     ifstream decodedFile(decodedFileName);
     string decodedLine;
     int curline = 0;
-    int intPerLine = dl->getIntPerLine();
+    int intPerLine = dl->getElementPerLine();
     int numLines = dl->getNumLines();
     bool diff = false;
     while (getline(decodedFile, decodedLine))
@@ -71,7 +71,7 @@ bool verify_quiet(DataLoader *dl, string decodedFileName)
     ifstream decodedFile(decodedFileName);
     string decodedLine;
     int curline = 0;
-    int intPerLine = dl->getIntPerLine();
+    int intPerLine = dl->getElementPerLine();
     int numLines = dl->getNumLines();
     while (getline(decodedFile, decodedLine))
     {
@@ -141,22 +141,14 @@ bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
     }
     int intPerLine = *(int *)addr;
     int numLines = *((int *)addr + 1);
-    if (intPerLine != dl->getIntPerLine())
+    if (intPerLine != dl->getElementPerLine())
     {
-        cout << endl;
-        cout << "\033[31m"
-             << "     === Verification failed: Decoded file has different intPerLine ==="
-             << "\033[0m" << endl;
-        cout << endl;
+        cout << "=== Verification failed: Decoded file has different intPerLine ===" << endl;
         return false;
     }
     if (numLines != dl->getNumLines())
     {
-        cout << endl;
-        cout << "\033[31m"
-             << "     === Verification failed: Decoded file has different numLines ==="
-             << "\033[0m" << endl;
-        cout << endl;
+        cout << "=== Verification failed: Decoded file has different numLines ===" << endl;
         return false;
     }
     int8 *cur = (int8 *)(addr + 2 * sizeof(int));
@@ -172,11 +164,7 @@ bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
         }
         if (diff)
         {
-            cout << endl;
-            cout << "\033[31m"
-                 << "     === Verification failed at line " << i + 1 << " ==="
-                 << "\033[0m" << endl;
-            cout << endl;
+            cout << "=== Verification failed at line " << i + 1 << " ===" << endl;
             cout << "Data line: ";
             for (int j = 0; j < intPerLine; j++)
                 cout << (int)dl->getDataAry()[i][j] << " ";
@@ -188,8 +176,6 @@ bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
             return false;
         }
     }
-    cout << "\033[32m"
-         << "     === Verification passed ==="
-         << "\033[0m" << endl;
+    cout << "=== Verification passed ===" << endl;
     return true;
 }

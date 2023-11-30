@@ -27,7 +27,7 @@ int getMinIndex(const vector<int> &freqMap)
     return minIndex;
 }
 
-DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(128), numInts(0)
+DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), elementPerLine(128), numInts(0)
 {
     // cal execution time
     auto start = chrono::high_resolution_clock::now();
@@ -55,16 +55,16 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
         cout << "Error: mmap failed" << endl;
         exit(1);
     }
-    intPerLine = *(int *)addr;
+    elementPerLine = *(int *)addr;
     numLines = *((int *)addr + 1);
     int8 *cur = (int8 *)(addr + 2 * sizeof(int));
-    dataAry = vector<vector<int8>>(numLines, vector<int8>(intPerLine, 0));
+    dataAry = vector<vector<int8>>(numLines, vector<int8>(elementPerLine, 0));
     int8 num = 0;
     for (int i = 0; i < numLines; i++)
     {
         // progressBar("Loading data", i, numLines - 1);
         vector<int> tmpFreqMap(SYM_NUM, 0);
-        for (int j = 0; j < intPerLine; j++)
+        for (int j = 0; j < elementPerLine; j++)
         {
             num = *(cur++);
             dataAry[i][j] = num;
@@ -96,7 +96,7 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), intPerLine(
             occurenceMap[i].second = INT32_MAX;
         }
     }
-    numBytes = numLines * intPerLine;
+    numBytes = numLines * elementPerLine;
     auto stop = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
     cout << "data loaded in " << duration.count() << "ms" << endl;
@@ -112,9 +112,9 @@ int DataLoader::getNumLines()
     return numLines;
 }
 
-int DataLoader::getIntPerLine()
+int DataLoader::getElementPerLine()
 {
-    return intPerLine;
+    return elementPerLine;
 }
 
 int DataLoader::getNumBytes()
@@ -147,7 +147,7 @@ ostream &operator<<(ostream &os, const DataLoader &dl)
     os << "filePath: " << dl.filePath << endl;
     os << "numBytes: " << dl.numBytes << endl;
     os << "numLines: " << dl.numLines << endl;
-    os << "intPerLine: " << dl.intPerLine << endl;
+    os << "intPerLine: " << dl.elementPerLine << endl;
     os << "numInts: " << dl.numInts << endl;
     os << "freqMap: " << endl;
     for (int i = 0; i <= SYM_NUM; i++)

@@ -61,7 +61,7 @@ CodeTree *Decoder::CanonicalToCodeTree(vector<int> codeLengths)
     return result;
 }
 
-int8_t Decoder::decodeOne()
+int8_t Decoder::decodeOne(int &line_width)
 {
     if (codeTree == nullptr)
         throw std::logic_error("Code tree is null");
@@ -78,6 +78,8 @@ int8_t Decoder::decodeOne()
         else
             throw std::logic_error("End of input before code completed");
 
+        line_width++;
+
         if (dynamic_cast<const Leaf *>(nextNode) != nullptr)
             return dynamic_cast<const Leaf *>(nextNode)->symbol + SYM_MIN;
         else if (dynamic_cast<const InternalNode *>(nextNode))
@@ -91,30 +93,16 @@ void Decoder::decode()
 {
     out.write((char *)&intPerLine, sizeof(int));
     out.write((char *)&numLines, sizeof(int));
-    int progress = 0;
     int8_t tmp = 0;
+    int line_width = 0;
     for (int i = 0; i < numLines; i++)
     {
+        line_width = 0;
         for (int j = 0; j < intPerLine; j++)
         {
-            tmp = decodeOne();
+            tmp = decodeOne(line_width);
             out.write((char *)&tmp, sizeof(int8_t));
         }
-    }
-}
-
-void Decoder::decode(DataLoader *dl)
-{
-    out.write((char *)&intPerLine, sizeof(int));
-    out.write((char *)&numLines, sizeof(int));
-    int progress = 0;
-    int8_t tmp = 0;
-    for (int i = 0; i < numLines; i++)
-    {
-        for (int j = 0; j < intPerLine; j++)
-        {
-            tmp = decodeOne();
-            out.write((char *)&tmp, sizeof(int8_t));
-        }
+        max_line_width = max(max_line_width, line_width);
     }
 }
