@@ -153,6 +153,7 @@ bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
     }
     int8 *cur = (int8 *)(addr + 2 * sizeof(int));
     bool diff = false;
+    int error_element = 0;
     for (int i = 0; i < numLines; i++)
     {
         for (int j = 0; j < intPerLine; j++)
@@ -160,19 +161,16 @@ bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
             if (*(cur++) != dl->getDataAry()[i][j])
             {
                 diff = true;
+                if (error_element == 0)
+                    error_element = j;
             }
         }
         if (diff)
         {
             cout << "=== Verification failed at line " << i + 1 << " ===" << endl;
-            cout << "Data line: ";
-            for (int j = 0; j < intPerLine; j++)
-                cout << (int)dl->getDataAry()[i][j] << " ";
-            cout << endl;
-            cout << "Decoded line: ";
-            for (int j = 0; j < intPerLine; j++)
-                cout << (int)*(cur - intPerLine + j) << " ";
-            cout << endl;
+            cout << "Data / Decoded: " << endl;
+            for (int j = error_element; j < intPerLine; j++)
+                cout << (int)dl->getDataAry()[i][j] << " / " << (int)*(cur - intPerLine + j) << endl;
             return false;
         }
     }

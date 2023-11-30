@@ -29,8 +29,6 @@ int getMinIndex(const vector<int> &freqMap)
 
 DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), elementPerLine(128), numInts(0)
 {
-    // cal execution time
-    auto start = chrono::high_resolution_clock::now();
     this->filePath = filePath;
     freqMap = vector<freq_t>(SYM_NUM, 0);
     occurenceMap = vector<pairInt>(SYM_NUM, pairInt(0, 0));
@@ -97,9 +95,6 @@ DataLoader::DataLoader(string filePath) : filePath(""), numLines(0), elementPerL
         }
     }
     numBytes = numLines * elementPerLine;
-    auto stop = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
-    cout << "data loaded in " << duration.count() << "ms" << endl;
 }
 
 int DataLoader::getNumInts()

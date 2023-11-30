@@ -1,0 +1,104 @@
+#!/bin/bash
+
+while getopts "bmsl:" opt; do
+    case $opt in
+        b) run_big=true
+        ;;
+        m) run_mid=true
+        ;;
+        s) run_small=true
+        ;;
+        l) logfilename="$OPTARG"
+        ;;
+        \?) echo "Invalid option -$OPTARG" >&2
+        ;;
+    esac
+done
+
+BIG_LIST=(
+    "data/DLRM/DLRM_emb_19.bin"
+    "data/DLRM/DLRM_emb_00.bin"
+    "data/DLRM/DLRM_emb_21.bin"
+    "data/DLRM/DLRM_emb_09.bin"
+    "data/DLRM/DLRM_emb_20.bin"
+    "data/MT5/MT5_xl_emb.bin"
+    "data/DLRM/DLRM_emb_10.bin"
+    "data/BLOOM/BLOOM_word_emb.bin"
+    "data/MT5/MT5_large_emb.bin"
+    "data/DeBERTa/DeBERTa_word_emb.bin"
+    "data/MT5/MT5_base_emb.bin"
+    "data/LLaMA/LLaMA_tok_emb.bin"
+    "data/MT5/MT5_small_emb.bin"
+    "data/DLRM/DLRM_emb_22.bin"
+    "data/DLRM/DLRM_emb_11.bin"
+    "data/RoBERTa/RoBERTa_word_emb.bin"
+    "data/GPT2/GPT2_word_emb.bin"
+)
+
+MID_LIST=(
+    "data/T5/T5_xl_emb.bin"
+    "data/T5/T5_large_emb.bin"
+    "data/GPT/GPT_tok_emb.bin"
+    "data/OPT/OPT_tok_emb.bin"
+    "data/T5/T5_small_emb.bin"
+    "data/BERT/BERT_word_emb.bin"
+    "data/FLAN/FLAN_emb.bin"
+    "data/T5/T5_small_emb.bin"
+    "data/DLRM/DLRM_emb_01.bin"
+    "data/ALBERT/ALBERT_word_emb.bin"
+    "data/DLRM/DLRM_emb_04.bin"
+    "data/DLRM/DLRM_emb_02.bin"
+    "data/OPT/OPT_pos_emb.bin"
+    "data/DLRM/DLRM_emb_23.bin"
+    "data/DLRM/DLRM_emb_14.bin"
+    "data/DLRM/DLRM_emb_03.bin"
+    "data/DLRM/DLRM_emb_06.bin"
+)
+
+SMALL_LIST=(
+    "data/GPT2/GPT2_pos_emb.bin"
+    "data/RoBERTa/RoBERTa_pos_emb.bin"
+    "data/BERT/BERT_pos_emb.bin"
+    "data/GPT/GPT_pos_emb.bin"
+    "data/DLRM/DLRM_emb_13.bin"
+    "data/DLRM/DLRM_emb_07.bin"
+    "data/DLRM/DLRM_emb_17.bin"
+    "data/DLRM/DLRM_emb_15.bin"
+    "data/DLRM/DLRM_emb_24.bin"
+    "data/DLRM/DLRM_emb_08.bin"
+    "data/DLRM/DLRM_emb_25.bin"
+    "data/DLRM/DLRM_emb_18.bin"
+    "data/BERT/BERT_type_emb.bin"
+    "data/DLRM/DLRM_emb_12.bin"
+    "data/DLRM/DLRM_emb_16.bin"
+    "data/DLRM/DLRM_emb_05.bin"
+)
+
+if [ ! -z "$run_big" ]; then
+    for file in "${BIG_LIST[@]}"; do
+        if [ ! -z "$logfilename" ]; then
+            ./bin/main "$file" verify >> "$logfilename"
+        else
+            ./bin/main "$file" verify
+        fi
+    done
+elif [ ! -z "$run_mid" ]; then
+    for file in "${MID_LIST[@]}"; do
+        if [ ! -z "$logfilename" ]; then
+            ./bin/main "$file" verify >> "$logfilename"
+        else
+            ./bin/main "$file" verify
+        fi
+    done
+elif [ ! -z "$run_small" ]; then
+    for file in "${SMALL_LIST[@]}"; do
+        if [ ! -z "$logfilename" ]; then
+            ./bin/main "$file" verify >> "$logfilename"
+        else
+            ./bin/main "$file" verify
+        fi
+    done
+else
+    echo "Please specify either -b, -m, or -s."
+    exit 1
+fi
