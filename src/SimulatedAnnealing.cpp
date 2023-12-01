@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 
 using namespace std;
 
@@ -22,23 +23,16 @@ SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter
 
 int SimulatedAnnealing::run()
 {
-    // cout << "Initial line width: " << dl->getIntPerLine() * 8 << endl;
     int MaxWidth = minMaxWidth;
     int newMaxWidth = 0;
     int stall_count = 0;
+    int maxTime = config->maxTime;
+    auto start = chrono::steady_clock::now();
     for (int iter = 0; iter < maxIter; iter++)
     {
-        // progressBar("SA", iter, maxIter - 1);
-        // cout << "=======================================================================================" << endl;
-        // cout << "iter: " << iter << endl;
-        // cout << "T = " << T << endl;
-        // cout << "cur tree: " << *tree << endl;
-        // cout << "cur width: " << MaxWidth << endl;
         srand(time(NULL));
         tree->modify(rand() % modRate + 1);
         newMaxWidth = encoder->getBestWidth();
-        // cout << "new tree: " << *tree << endl;
-        // cout << "new width: " << newMaxWidth << endl;
         stall_count++;
         if (newMaxWidth < minMaxWidth)
         {
@@ -47,7 +41,7 @@ int SimulatedAnnealing::run()
             bestTree = new TreeArray(*tree);
             stall_count = 0;
         }
-        // if (newMaxWidth < MaxWidth || rand() % 10000 < exp((MaxWidth - newMaxWidth) / T) * 10000)
+        // if (newMaxWidth < MaxWidth || rand() % 10000 < exp((newMaxWidth - MaxWidth) / T) * 10000)
         if (newMaxWidth < MaxWidth)
         {
             // cout << "=> Accept new tree" << endl;
@@ -58,11 +52,14 @@ int SimulatedAnnealing::run()
             // cout << "=> Preserve cur tree" << endl;
             tree->recover();
         }
-        // cout << "Stop SA at iter " << iter << "\r" << flush;
         if (stall_count > config->stallIter)
         {
-            // cout << endl;
-            cout << "Stop SA at iter " << iter << endl;
+            cout << "Stop SA at iter " << iter << " since exceeding stall limit" << endl;
+            break;
+        }
+        else if (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count() > maxTime)
+        {
+            cout << "Stop SA at iter " << iter << " since exceeding time limit" << endl;
             break;
         }
         T *= Rt;

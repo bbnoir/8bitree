@@ -169,6 +169,8 @@ bool verify_bin_quiet(DataLoader *dl, string decodedFileName)
         {
             cout << "=== Verification failed at line " << i + 1 << " ===" << endl;
             cout << "Data / Decoded: " << endl;
+            if (error_element > 2)
+                error_element -= 2;
             for (int j = error_element; j < intPerLine; j++)
                 cout << (int)dl->getDataAry()[i][j] << " / " << (int)*(cur - intPerLine + j) << endl;
             return false;

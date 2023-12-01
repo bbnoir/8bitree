@@ -1,4 +1,5 @@
 #include "BitStream.h"
+#include <limits>
 
 BitInputStream::BitInputStream(string fileName) : in(*(new ifstream(fileName, ios::binary))), buf(0), nbits(0) {}
 
@@ -45,10 +46,10 @@ void BitOutputStream::writeInt(int i)
     out.write((char *)&i, sizeof(int));
 }
 
-void BitOutputStream::writeCode(int code, int length)
+void BitOutputStream::writeCode(string code)
 {
-    for (int i = 0; i < length; i++)
-        writeBit((code >> (length - 1 - i)) & 1);
+    for (int i = 0; i < code.length(); i++)
+        writeBit(code[i] - '0');
 }
 
 void BitOutputStream::flush()
@@ -57,7 +58,9 @@ void BitOutputStream::flush()
     if (nbits == 0)
         return;
     buf <<= (8 - nbits);
-    out.write(&buf, sizeof(char));
+    if (std::numeric_limits<char>::is_signed)
+        buf -= (buf >> 7) << 8;
+    out.put(static_cast<char>(buf));
     buf = 0;
     nbits = 0;
 }

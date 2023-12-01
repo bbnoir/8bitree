@@ -6,6 +6,14 @@
 
 using namespace std;
 
+enum class initMode
+{
+    BALANCE,
+    RANDOM,
+    HUFFMAN,
+    HALF
+};
+
 class TreeArray
 {
 private:

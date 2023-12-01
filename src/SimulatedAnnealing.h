@@ -13,6 +13,7 @@ struct Config
     double T;        // Initial temperature
     double Rt;       // Temperature reduction rate
     int modRate;     // Modification rate
+    int maxTime;     // Maximum time in seconds
 };
 
 class SimulatedAnnealing

@@ -18,7 +18,7 @@ enum way
 class Encoder
 {
 private:
-    map<int, pair<int, int>> canonCode;
+    map<int, string> canonCode;
     int bestWidth;
     int bestWay;
 
@@ -36,7 +36,7 @@ public:
     int genCodeLength_FQ();
     int genCodeLength_EX();
     int genCodeLength_OC();
-    map<int, pair<int,int> > genCanonCode();
+    map<int, string> genCanonCode();
     void encode(string outputFileName);
     int getBestWidth();
     int getBestWay();

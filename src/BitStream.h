@@ -30,6 +30,6 @@ public:
     ~BitOutputStream();
     void writeBit(int i);
     void writeInt(int i);
-    void writeCode(int code, int length);
+    void writeCode(string code);
     void flush();
 };

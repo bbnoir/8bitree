@@ -8,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-#define THREAD_NUM 8
+#define THREAD_NUM 4
 
 using namespace std;
 
@@ -207,7 +207,7 @@ bool checkTreeValid(vector<int> codeLengths)
     return true;
 }
 
-map<int, pair<int, int>> Encoder::genCanonCode()
+map<int, string> Encoder::genCanonCode()
 {
     // Check basic validity
     if (codeLength.size() < 2)
@@ -217,7 +217,7 @@ map<int, pair<int, int>> Encoder::genCanonCode()
     checkTreeValid(codeLength);
     // sort the codeLength map by value
     vector<pair<int, int>> sortedCodeLength = sort(codeLength);
-    map<int, pair<int, int>> canonCode;
+    map<int, string> canonCode;
     int prevCode = -1;
     int currCode = -1;
     string currCodeStr = "";
@@ -231,8 +231,7 @@ map<int, pair<int, int>> Encoder::genCanonCode()
         len = i->second;
         if (len == 0)
         {
-            canonCode[key].first = 0;
-            canonCode[key].second = 0;
+            canonCode[key] = "";
             continue;
         }
         if (prevCode == -1)
@@ -243,8 +242,7 @@ map<int, pair<int, int>> Encoder::genCanonCode()
         {
             currCode = (prevCode + 1) << (len - prevLen);
         }
-        canonCode[key].first = currCode;
-        canonCode[key].second = len;
+        canonCode[key] = bitset<ARRAY_SIZE>(currCode).to_string().substr(ARRAY_SIZE - len);
         prevCode = currCode;
         prevLen = len;
     }
@@ -263,12 +261,12 @@ void Encoder::encode(string outputFileName)
     for (int i = 0; i < SYM_NUM; i++)
         out->writeInt(codeLength[i]);
     // write the code
-    map<int, pair<int, int>> canonCode = genCanonCode();
+    map<int, string> canonCode = genCanonCode();
     for (int i = 0; i < numLines; i++)
     {
         for (int j = 0; j < intPerLine; j++)
         {
-            out->writeCode(canonCode[dl->getDataAry()[i][j]].first, canonCode[dl->getDataAry()[i][j]].second);
+            out->writeCode(canonCode[dl->getDataAry()[i][j]]);
         }
     }
     delete out;
