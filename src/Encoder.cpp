@@ -8,13 +8,13 @@
 #include <fstream>
 #include <sstream>
 
-#define THREAD_NUM 4
+#define THREAD_NUM 12
 
 using namespace std;
 
 Encoder::Encoder(DataLoader *dl, TreeArray *tree) : dl(dl), tree(tree), codeLength(cl_FQ)
 {
-    bestWidth = INFINITY;
+    bestWidth = INT32_MAX;
     bestWay = -1;
     cl_FQ = vector<int>(SYM_NUM, 0);
     cl_EX = vector<int>(SYM_NUM, 0);
@@ -132,7 +132,7 @@ int Encoder::genCodeLength_OC()
 
 int Encoder::genCodeLength()
 {
-    bestWidth = INFINITY;
+    bestWidth = INT32_MAX;
     int width;
     width = genCodeLength_FQ();
     if (width < bestWidth)
