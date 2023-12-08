@@ -17,19 +17,23 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    Config config = {
-        .filePath = argv[1],
-        .maxIter = 10000,
-        .stallIter = 100,
-        .T = 100,
-        .Rt = 0.999,
-        .modRate = 1000,
-        .maxTime = 30 * 60};
+    Config config =
+        {
+            .filePath = argv[1],
+            .maxIter = 100,
+            .stallIter = 10,
+            .T = 100,
+            .Rt = 0.95,
+            .modRate = 100,
+            .maxTime = 5 * 60,
+            .deterministic = false,
+        };
 
     cout << "Data: " << config.filePath << endl;
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
     sa->run();
     // sa->show();
+    sa->show_history();
     sa->show_compress_ratio();
 
     // verify

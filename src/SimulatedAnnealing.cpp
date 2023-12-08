@@ -19,6 +19,17 @@ SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter
     bestTree = new TreeArray(*tree);
     minMaxWidth = encoder->getBestWidth();
     balanceWidth = minMaxWidth;
+    initWidth = dl->getElementPerLine() * 8;
+}
+
+bool accept(int newMaxWidth, int MaxWidth, double initWidth, double T)
+{
+    if (newMaxWidth < MaxWidth)
+        return true;
+    else if (exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) > (double)rand() / RAND_MAX)
+        return true;
+    else
+        return false;
 }
 
 int SimulatedAnnealing::run()
@@ -28,30 +39,45 @@ int SimulatedAnnealing::run()
     int stall_count = 0;
     int maxTime = config->maxTime;
     auto start = chrono::steady_clock::now();
+    unsigned seed = 42;
+    if (!config->deterministic)
+        seed = time(NULL);
+    srand(seed);
     for (int iter = 0; iter < maxIter; iter++)
     {
-        srand(time(NULL));
+        History *h = new History();
+        h->iter = iter;
+        h->T = T;
+        h->stall_count = stall_count;
+        h->time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
+        h->maxWidth = MaxWidth;
         tree->modify(rand() % modRate + 1);
-        newMaxWidth = encoder->getBestWidth();
+        newMaxWidth = encoder->getBestWidth(); // get new energy
+        h->newMaxWidth = newMaxWidth;
+        h->compress_ratio = (initWidth - newMaxWidth) / initWidth * 100;
+
         stall_count++;
-        if (newMaxWidth < minMaxWidth)
+        if (newMaxWidth < minMaxWidth) // early stop
         {
             minMaxWidth = newMaxWidth;
             delete bestTree;
             bestTree = new TreeArray(*tree);
-            stall_count = 0;
         }
-        // if (newMaxWidth < MaxWidth || rand() % 10000 < exp((newMaxWidth - MaxWidth) / T) * 10000)
-        if (newMaxWidth < MaxWidth)
+        h->minMaxWidth = minMaxWidth;
+        h->accept_prob = exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) * 100;
+        if (h->accept_prob > 100)
+            h->accept_prob = 100;
+
+        if (accept(newMaxWidth, MaxWidth, initWidth, T))
         {
-            // cout << "=> Accept new tree" << endl;
             MaxWidth = newMaxWidth;
+            stall_count = 0;
         }
         else
         {
-            // cout << "=> Preserve cur tree" << endl;
             tree->recover();
         }
+
         if (stall_count > config->stallIter)
         {
             cout << "Stop SA at iter " << iter << " since exceeding stall limit" << endl;
@@ -62,7 +88,14 @@ int SimulatedAnnealing::run()
             cout << "Stop SA at iter " << iter << " since exceeding time limit" << endl;
             break;
         }
-        T *= Rt;
+
+        T *= Rt; // reduce temperature
+
+        history.push_back(h);
+
+        cout.flush();
+        cout << "\r"
+             << "Iter: " << iter << " / " << maxIter << " -> Compress ratio: " << fixed << setprecision(2) << h->compress_ratio << "%";
     }
     return minMaxWidth;
 }
@@ -80,7 +113,6 @@ void SimulatedAnnealing::show()
     cout << "Result Tree Array:" << endl;
     cout << *bestTree << endl;
     cout << "=======================================================================================" << endl;
-    double initWidth = dl->getElementPerLine() * 8;
     cout << "Assignment mode: ";
     int bestWay = encoder->getBestWay();
     if (bestWay == FQ)
@@ -97,7 +129,6 @@ void SimulatedAnnealing::show()
 
 void SimulatedAnnealing::show_compress_ratio()
 {
-    double initWidth = dl->getElementPerLine() * 8;
     cout << "Integers used: " << dl->getNumInts() << "/256" << endl;
     cout << "Assignment mode: ";
     int bestWay = encoder->getBestWay();
@@ -112,4 +143,20 @@ void SimulatedAnnealing::show_compress_ratio()
     cout << "Compression ratio: " << fixed << setprecision(2) << (initWidth - balanceWidth) / initWidth * 100 << "%" << endl;
     cout << "Maximum row width: " << minMaxWidth << endl;
     cout << "Compression ratio: " << fixed << setprecision(2) << (initWidth - minMaxWidth) / initWidth * 100 << "%" << endl;
+}
+
+void SimulatedAnnealing::show_history()
+{
+    cout << "=======================================================================================" << endl;
+    cout << "======================================= History =======================================" << endl;
+    cout << "=======================================================================================" << endl;
+    cout << "Iter\tT\tTime\tStall\tMaxWidth\tNewMaxWidth\tMinMaxWidth\tacceptProb\tCompress" << endl;
+    for (auto h : history)
+    {
+        cout << h->iter << "\t" << h->T << "\t" << h->time << "\t";
+        cout << h->stall_count << "\t" << h->maxWidth << "\t\t" << h->newMaxWidth << "\t\t" << h->minMaxWidth << "\t\t";
+        cout << fixed << setprecision(2) << h->accept_prob << "%\t\t";
+        cout << fixed << setprecision(2) << h->compress_ratio << "%" << endl;
+    }
+    cout << "=======================================================================================" << endl;
 }
