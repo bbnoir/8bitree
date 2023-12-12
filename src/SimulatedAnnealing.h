@@ -1,10 +1,18 @@
 #pragma once
 #include "DataLoader.h"
 #include "TreeArray.h"
-#include "Encoder.h"
+#include "CodeLength.h"
+#include "Encoder2.h"
 #include <vector>
 
 using namespace std;
+
+enum class INIT_MODE
+{
+    BALANCED,
+    HUFFMAN,
+    FOURBIT
+};
 
 struct Config
 {
@@ -16,6 +24,7 @@ struct Config
     int modRate;        // Modification rate
     int maxTime;        // Maximum time in seconds
     bool deterministic; // Whether to use deterministic random number generator
+    INIT_MODE initMode; // Initial code length mode
 };
 
 struct History
@@ -36,8 +45,8 @@ class SimulatedAnnealing
 
 public:
     int minMaxWidth;
-    int balanceWidth;
-    double initWidth;
+    int initMaxWidth;
+    double nonCompressedWidth;
     const int maxIter = 10;
     double T = 1000;
     double Rt = 0.99;
@@ -46,6 +55,7 @@ public:
     vector<History *> history;
 
     // utility functions
+    void initCodeLength(INIT_MODE mode);
 
 public:
     // constructor
@@ -56,7 +66,7 @@ public:
     void show_history();
     Config *config;
     DataLoader *dl;
-    TreeArray *tree;
-    Encoder *encoder;
-    TreeArray *bestTree;
+    CodeLength *cl;
+    vector<int> bestCodeLength;
+    Encoder2 *encoder;
 };

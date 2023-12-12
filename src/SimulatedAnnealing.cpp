@@ -2,6 +2,7 @@
 #include "DataLoader.h"
 #include "TreeArray.h"
 #include "Constants.h"
+#include "Encoder.h"
 #include "Utils.h"
 #include <iomanip>
 #include <algorithm>
@@ -10,23 +11,36 @@
 
 using namespace std;
 
+void SimulatedAnnealing::initCodeLength(INIT_MODE mode)
+{
+    switch (mode)
+    {
+    case INIT_MODE::BALANCED:
+        TreeArray *tmpTree = new TreeArray(dl->getNumInts());
+        Encoder *tmpEncoder = new Encoder(dl, tmpTree);
+        minMaxWidth = tmpEncoder->getBestWidth();
+        cl = new CodeLength(tmpEncoder->getCodeLength());
+
+        break;
+    }
+}
+
 SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter(config->maxIter), T(config->T), Rt(config->Rt), minMaxWidth(0), modRate(config->modRate)
 {
     config = config;
     dl = new DataLoader(config->filePath);
-    tree = new TreeArray(dl->getNumInts());
-    encoder = new Encoder(dl, tree);
-    bestTree = new TreeArray(*tree);
-    minMaxWidth = encoder->getBestWidth();
-    balanceWidth = minMaxWidth;
-    initWidth = dl->getElementPerLine() * 8;
+    initCodeLength(config->initMode);
+    encoder = new Encoder2(dl, cl->getCodeLengthRef());
+    initMaxWidth = minMaxWidth;
+    bestCodeLength = cl->getCodeLength();
+    nonCompressedWidth = dl->getElementPerLine() * 8;
 }
 
-bool accept(int newMaxWidth, int MaxWidth, double initWidth, double T)
+bool accept(int newMaxWidth, int MaxWidth, double nonCompressedWidth, double T)
 {
     if (newMaxWidth < MaxWidth)
         return true;
-    else if (exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) > (double)rand() / RAND_MAX)
+    else if (exp((MaxWidth - newMaxWidth) / nonCompressedWidth * 10000 / T) > (double)rand() / RAND_MAX)
         return true;
     else
         return false;
@@ -51,31 +65,30 @@ int SimulatedAnnealing::run()
         h->stall_count = stall_count;
         h->time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
         h->maxWidth = MaxWidth;
-        tree->modify(rand() % modRate + 1);
-        newMaxWidth = encoder->getBestWidth(); // get new energy
+        cl->modify(rand() % modRate + 1);
+        newMaxWidth = encoder->getMaxWidth();
         h->newMaxWidth = newMaxWidth;
-        h->compress_ratio = (initWidth - newMaxWidth) / initWidth * 100;
+        h->compress_ratio = (nonCompressedWidth - newMaxWidth) / nonCompressedWidth * 100;
 
         stall_count++;
         if (newMaxWidth < minMaxWidth) // early stop
         {
             minMaxWidth = newMaxWidth;
-            delete bestTree;
-            bestTree = new TreeArray(*tree);
+            bestCodeLength = cl->getCodeLength();
         }
         h->minMaxWidth = minMaxWidth;
-        h->accept_prob = exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) * 100;
+        h->accept_prob = exp((MaxWidth - newMaxWidth) / nonCompressedWidth * 10000 / T) * 100;
         if (h->accept_prob > 100)
             h->accept_prob = 100;
 
-        if (accept(newMaxWidth, MaxWidth, initWidth, T))
+        if (accept(newMaxWidth, MaxWidth, nonCompressedWidth, T))
         {
             MaxWidth = newMaxWidth;
             stall_count = 0;
         }
         else
         {
-            tree->recover();
+            cl->recover();
         }
 
         if (stall_count > config->stallIter)
@@ -110,39 +123,31 @@ void SimulatedAnnealing::show()
     cout << "Initial temperature: " << config->T << endl;
     cout << "Temperature reduction rate: " << config->Rt << endl;
     cout << "=======================================================================================" << endl;
-    cout << "Result Tree Array:" << endl;
-    cout << *bestTree << endl;
+    cout << "Result Code Length: " << endl;
+    for (int i = 0; i < SYM_NUM; i++)
+    {
+        cout << bestCodeLength[i] << " ";
+        if (i % 64 == 63)
+            cout << endl;
+    }
     cout << "=======================================================================================" << endl;
-    cout << "Assignment mode: ";
-    int bestWay = encoder->getBestWay();
-    if (bestWay == FQ)
-        cout << "FQ" << endl;
-    else if (bestWay == EX)
-        cout << "EX" << endl;
-    else if (bestWay == OC)
-        cout << "OC" << endl;
-    cout << "Initial row width: " << initWidth << endl;
+    cout << "Integers used: " << dl->getNumInts() << "/256" << endl;
+    cout << "Non-compressed row width: " << nonCompressedWidth << endl;
+    cout << "Initial row width: " << initMaxWidth << endl;
+    cout << "Compression ratio: " << fixed << setprecision(2) << (nonCompressedWidth - initMaxWidth) / nonCompressedWidth * 100 << "%" << endl;
     cout << "Maximum row width: " << minMaxWidth << endl;
-    cout << "Compression ratio: " << (initWidth - minMaxWidth) / initWidth * 100 << "%" << endl;
+    cout << "Compression ratio: " << fixed << setprecision(2) << (nonCompressedWidth - minMaxWidth) / nonCompressedWidth * 100 << "%" << endl;
     cout << "=======================================================================================" << endl;
 }
 
 void SimulatedAnnealing::show_compress_ratio()
 {
     cout << "Integers used: " << dl->getNumInts() << "/256" << endl;
-    cout << "Assignment mode: ";
-    int bestWay = encoder->getBestWay();
-    if (bestWay == FQ)
-        cout << "FQ" << endl;
-    else if (bestWay == EX)
-        cout << "EX" << endl;
-    else if (bestWay == OC)
-        cout << "OC" << endl;
-    cout << "Initial row width: " << initWidth << endl;
-    cout << "Balance row width: " << balanceWidth << endl;
-    cout << "Compression ratio: " << fixed << setprecision(2) << (initWidth - balanceWidth) / initWidth * 100 << "%" << endl;
+    cout << "Non-compressed row width: " << nonCompressedWidth << endl;
+    cout << "Initial row width: " << initMaxWidth << endl;
+    cout << "Compression ratio: " << fixed << setprecision(2) << (nonCompressedWidth - initMaxWidth) / nonCompressedWidth * 100 << "%" << endl;
     cout << "Maximum row width: " << minMaxWidth << endl;
-    cout << "Compression ratio: " << fixed << setprecision(2) << (initWidth - minMaxWidth) / initWidth * 100 << "%" << endl;
+    cout << "Compression ratio: " << fixed << setprecision(2) << (nonCompressedWidth - minMaxWidth) / nonCompressedWidth * 100 << "%" << endl;
 }
 
 void SimulatedAnnealing::show_history()

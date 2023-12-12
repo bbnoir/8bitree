@@ -1,5 +1,6 @@
 #include <iostream>
 #include "DataLoader.h"
+#include "CodeLength.h"
 #include "Constants.h"
 #include "Utils.h"
 #include <random>
@@ -9,33 +10,17 @@
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main()
 {
-    if (argc != 2)
+    CodeLength *cl = new CodeLength();
+    cout << "Initial code length: " << endl;
+    cout << *cl << endl;
+    int test_num = 10000;
+    for (int i = 1; i <= test_num; i++)
     {
-        cout << "Usage: ./test <dataFileName>" << endl;
-        return EXIT_FAILURE;
+        cout << "Modify " << i << " times" << endl;
+        cl->modify(i);
+        cout << *cl << endl;
     }
-    string dataFileName = argv[1];
-    string encodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_encoded.txt";
-    string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.txt";
-
-    bool clean = true;
-    if (argc == 3 && string(argv[2]) == "noclean")
-        clean = false;
-
-    // calculate data load time
-    auto start = chrono::high_resolution_clock::now();
-
-    // load data
-    cout << "Loading data..." << endl;
-    DataLoader *dl = new DataLoader(dataFileName);
-
-    auto stop = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
-    cout << "Data loaded in " << duration.count() << " ms" << endl;
-
-    cout << "numLines: " << dl->getNumLines() << endl;
-
     return EXIT_SUCCESS;
 }

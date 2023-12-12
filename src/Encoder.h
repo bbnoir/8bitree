@@ -40,4 +40,5 @@ public:
     void encode(string outputFileName);
     int getBestWidth();
     int getBestWay();
+    vector<int> getCodeLength();
 };

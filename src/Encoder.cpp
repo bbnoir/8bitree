@@ -158,55 +158,6 @@ int Encoder::genCodeLength()
     return bestWidth;
 }
 
-bool cmp(const pair<int, int> &a, const pair<int, int> &b)
-{
-    if (a.second == b.second)
-        return a.first < b.first;
-    return a.second < b.second;
-}
-
-// Function to sort the map according to value in a (key-value) pairs
-vector<pair<int, int>> sort(vector<int> M)
-{
-    vector<pair<int, int>> A;
-    for (int i = 0; i < M.size(); i++)
-        A.push_back(make_pair(i + SYM_MIN, M[i]));
-    sort(A.begin(), A.end(), cmp);
-    return A;
-}
-
-bool checkTreeValid(vector<int> codeLengths)
-{
-    std::sort(codeLengths.begin(), codeLengths.end(), std::greater<int>());
-    int currentLevel = codeLengths.front();
-    int numNodesAtLevel = 0;
-    for (int cl : codeLengths)
-    {
-        if (cl == 0)
-            break;
-        while (cl < currentLevel)
-        {
-            if (numNodesAtLevel % 2 != 0)
-                throw std::invalid_argument("Under-full Huffman code tree");
-            numNodesAtLevel /= 2;
-            currentLevel--;
-        }
-        numNodesAtLevel++;
-    }
-    while (currentLevel > 0)
-    {
-        if (numNodesAtLevel % 2 != 0)
-            throw std::invalid_argument("Under-full Huffman code tree");
-        numNodesAtLevel /= 2;
-        currentLevel--;
-    }
-    if (numNodesAtLevel < 1)
-        throw std::invalid_argument("Under-full Huffman code tree");
-    if (numNodesAtLevel > 1)
-        throw std::invalid_argument("Over-full Huffman code tree");
-    return true;
-}
-
 map<int, string> Encoder::genCanonCode()
 {
     // Check basic validity
@@ -216,7 +167,7 @@ map<int, string> Encoder::genCanonCode()
         throw std::length_error("Too many symbols");
     checkTreeValid(codeLength);
     // sort the codeLength map by value
-    vector<pair<int, int>> sortedCodeLength = sort(codeLength);
+    vector<pair<int, int>> sortedCodeLength = sort_cl(codeLength);
     map<int, string> canonCode;
     int prevCode = -1;
     int currCode = -1;
@@ -281,4 +232,9 @@ int Encoder::getBestWidth()
 int Encoder::getBestWay()
 {
     return bestWay;
+}
+
+vector<int> Encoder::getCodeLength()
+{
+    return codeLength;
 }
