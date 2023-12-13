@@ -18,4 +18,6 @@ bool verify(DataLoader *dl, string decodedFileName);
 
 bool verify_quiet(DataLoader *dl, string decodedFileName);
 
+bool verify_bin(DataLoader *dl, string decodedFileName);
+
 bool verify_bin_quiet(DataLoader *dl, string decodedFileName);

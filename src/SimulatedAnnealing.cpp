@@ -110,6 +110,8 @@ int SimulatedAnnealing::run()
         cout << "\r"
              << "Iter: " << iter << " / " << maxIter << " -> Compress ratio: " << fixed << setprecision(2) << h->compress_ratio << "%";
     }
+    delete encoder;
+    encoder = new Encoder2(dl, bestCodeLength);
     return minMaxWidth;
 }
 

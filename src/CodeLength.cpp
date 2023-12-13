@@ -98,6 +98,12 @@ void CodeLength::modify(int times)
                     codeLength[victim] += 1;
                     lenSet[codeLength[victim]].push_back(victim);
 
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
+                    }
+
                     success = true;
                 }
                 break;
@@ -119,6 +125,12 @@ void CodeLength::modify(int times)
                     codeLength[victim] -= 1;
                     lenSet[codeLength[victim]].push_back(victim);
 
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
+                    }
+
                     success = true;
                 }
                 else if (curLength >= 3 && curLength <= CL_MAX && lenSet[curLength].size() >= 2 && lenSet[curLength - 2].size() >= 1)
@@ -137,6 +149,12 @@ void CodeLength::modify(int times)
                     erase_victim(lenSet[curLength - 2], victim);
                     codeLength[victim] += 1;
                     lenSet[codeLength[victim]].push_back(victim);
+
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
+                    }
 
                     success = true;
                 }
@@ -157,6 +175,12 @@ void CodeLength::modify(int times)
                     codeLength[victim] -= 2;
                     lenSet[codeLength[victim]].push_back(victim);
 
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
+                    }
+
                     success = true;
                 }
                 else if (curLength >= 3 && curLength + 1 <= CL_MAX && lenSet[curLength].size() >= 1 && lenSet[curLength - 1].size() >= 2)
@@ -172,6 +196,12 @@ void CodeLength::modify(int times)
                         erase_victim(lenSet[curLength - 1], victim);
                         codeLength[victim] += 2;
                         lenSet[codeLength[victim]].push_back(victim);
+                    }
+
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
                     }
 
                     success = true;
@@ -193,6 +223,12 @@ void CodeLength::modify(int times)
                         lenSet[codeLength[victim]].push_back(victim);
                     }
 
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
+                    }
+
                     success = true;
                 }
                 else if (curLength >= 4 && curLength <= CL_MAX && lenSet[curLength].size() >= 2 && lenSet[curLength - 3].size() >= 1)
@@ -209,6 +245,12 @@ void CodeLength::modify(int times)
                     erase_victim(lenSet[curLength - 3], victim);
                     codeLength[victim] += 2;
                     lenSet[codeLength[victim]].push_back(victim);
+
+                    if (!checkKraft())
+                    {
+                        throw std::invalid_argument("Kraft inequality is not satisfied!");
+                        exit(1);
+                    }
 
                     success = true;
                 }

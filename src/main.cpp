@@ -53,10 +53,13 @@ int main(int argc, char *argv[])
         delete decoder;
 
         // verify
-        bool success = verify_bin_quiet(sa->dl, decodedFileName);
+        // bool success = verify_bin_quiet(sa->dl, decodedFileName);
+        bool success = verify_bin(sa->dl, decodedFileName);
 
         // if (!success)
         //     cout << "FAILED: verification failed" << endl;
+        cout << "max line width: " << max_line_width << endl;
+        cout << "min max line width: " << sa->minMaxWidth << endl;
         if (max_line_width != sa->minMaxWidth)
             cout << "FAILED: max line width mismatch" << endl;
 
