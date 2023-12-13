@@ -50,11 +50,21 @@ bool CodeLength::checkKraft()
     double sum = 0;
     for (int i = 0; i < SYM_NUM; i++)
     {
-        sum += pow(2, -codeLength[i]);
+        if (codeLength[i] > 0)
+            sum += pow(2, -codeLength[i]);
     }
     if (sum > 1)
     {
         cout << "Kraft inequality is not satisfied!" << endl;
+        cout << "Sum: " << sum << endl;
+        sum = 0;
+        for (int i = 0; i < SYM_NUM; i++)
+        {
+            if (codeLength[i] > 0)
+                sum += pow(2, -codeLength[i]);
+            cout << sum << " ";
+        }
+        cout << endl;
         return false;
     }
     return sum <= 1;
@@ -100,6 +110,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -127,6 +138,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -152,6 +164,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -177,6 +190,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -200,6 +214,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -225,6 +240,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -248,6 +264,7 @@ void CodeLength::modify(int times)
 
                     if (!checkKraft())
                     {
+                        this->showInfo();
                         throw std::invalid_argument("Kraft inequality is not satisfied!");
                         exit(1);
                     }
@@ -276,4 +293,33 @@ vector<int> CodeLength::getCodeLength()
 vector<int> &CodeLength::getCodeLengthRef()
 {
     return codeLength;
+}
+
+void CodeLength::showInfo()
+{
+    cout << "Symbol number: " << symNum << endl;
+    cout << "Symbol list: " << endl;
+    for (int i = 0; i < symNum; i++)
+    {
+        cout << symList[i] << " ";
+        if (i % 32 == 31)
+            cout << endl;
+    }
+    cout << endl;
+    cout << "Length set: " << endl;
+    for (int i = 0; i <= CL_MAX; i++)
+    {
+        if (lenSet[i].size() == 0)
+            continue;
+        cout << i << ": ";
+        for (int j = 0; j < lenSet[i].size(); j++)
+        {
+            cout << lenSet[i][j] << " ";
+            if (j % 32 == 31)
+                cout << endl
+                     << "   ";
+        }
+        cout << endl;
+    }
+    cout << endl;
 }

@@ -20,6 +20,7 @@ void SimulatedAnnealing::initCodeLength(INIT_MODE mode)
         Encoder *tmpEncoder = new Encoder(dl, tmpTree);
         minMaxWidth = tmpEncoder->getBestWidth();
         cl = new CodeLength(tmpEncoder->getCodeLength());
+        cl->showInfo();
 
         break;
     }

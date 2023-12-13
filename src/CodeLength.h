@@ -41,4 +41,5 @@ public:
     // get
     vector<int> getCodeLength();
     vector<int> &getCodeLengthRef();
+    void showInfo();
 };
