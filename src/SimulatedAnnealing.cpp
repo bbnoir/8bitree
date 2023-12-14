@@ -20,7 +20,6 @@ void SimulatedAnnealing::initCodeLength(INIT_MODE mode)
         Encoder *tmpEncoder = new Encoder(dl, tmpTree);
         minMaxWidth = tmpEncoder->getBestWidth();
         cl = new CodeLength(tmpEncoder->getCodeLength());
-        cl->showInfo();
         break;
     }
 }
@@ -65,11 +64,8 @@ int SimulatedAnnealing::run()
         h->stall_count = stall_count;
         h->time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
         h->maxWidth = MaxWidth;
-        cl->modify(rand() % modRate + 1);
-        cout << endl;
-        cout << "After modify " << rand() % modRate + 1 << " times: " << endl;
-        cl->showInfo();
-        cout << endl;
+        // cl->modify(rand() % modRate + 1);
+        cl->modify(1);
         newMaxWidth = encoder->getMaxWidth();
         h->newMaxWidth = newMaxWidth;
         h->compress_ratio = (nonCompressedWidth - newMaxWidth) / nonCompressedWidth * 100;
@@ -90,15 +86,10 @@ int SimulatedAnnealing::run()
             MaxWidth = newMaxWidth;
             stall_count = 0;
         }
-        cl->recover();
-        // else
-        // {
-        //     cl->recover();
-        // }
-
-        cout << "After accept: " << endl;
-        cl->showInfo();
-        cout << endl;
+        else
+        {
+            cl->recover();
+        }
 
         if (stall_count > config->stallIter)
         {
