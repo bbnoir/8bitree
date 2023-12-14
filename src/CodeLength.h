@@ -24,6 +24,7 @@ private:
     int symNum;
     vector<int> symList;
     vector<vector<int>> lenSet;
+    vector<vector<int>> prevLenSet;
 
     void init();
 

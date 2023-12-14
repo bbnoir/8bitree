@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
     Config config =
         {
             .filePath = argv[1],
-            .maxIter = 1000,
-            .stallIter = 200,
+            .maxIter = 200,
+            .stallIter = 100,
             .T = 100,
             .Rt = 0.95,
             .modRate = 10000,
