@@ -64,8 +64,8 @@ int SimulatedAnnealing::run()
         h->stall_count = stall_count;
         h->time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
         h->maxWidth = MaxWidth;
-        // cl->modify(rand() % modRate + 1);
-        cl->modify(1);
+        cl->modify(rand() % modRate + 1);
+        // cl->modify(1);
         newMaxWidth = encoder->getMaxWidth();
         h->newMaxWidth = newMaxWidth;
         h->compress_ratio = (nonCompressedWidth - newMaxWidth) / nonCompressedWidth * 100;
@@ -106,10 +106,9 @@ int SimulatedAnnealing::run()
 
         history.push_back(h);
 
-        // cout.flush();
-        // cout << "\r"
-        //      << "Iter: " << iter << " / " << maxIter << " -> Compress ratio: " << fixed << setprecision(2) << h->compress_ratio << "%";
-        cout << "Iter: " << iter << " / " << maxIter << " -> Compress ratio: " << fixed << setprecision(2) << h->compress_ratio << "%" << endl;
+        cout.flush();
+        cout << "\r"
+             << "Iter: " << iter << " / " << maxIter << " -> Compress ratio: " << fixed << setprecision(2) << h->compress_ratio << "%";
     }
     delete encoder;
     encoder = new Encoder2(dl, bestCodeLength);

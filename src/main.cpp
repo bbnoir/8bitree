@@ -20,11 +20,11 @@ int main(int argc, char *argv[])
     Config config =
         {
             .filePath = argv[1],
-            .maxIter = 1000,
-            .stallIter = 200,
+            .maxIter = 100000,
+            .stallIter = 20000,
             .T = 100,
             .Rt = 0.95,
-            .modRate = 5,
+            .modRate = 10000,
             .maxTime = 5 * 60,
             .deterministic = false,
             .initMode = INIT_MODE::BALANCED};
