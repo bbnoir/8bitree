@@ -3,10 +3,7 @@
 #include "BitStream.h"
 #include "Utils.h"
 #include <algorithm>
-#include <iostream>
 #include <bitset>
-#include <fstream>
-#include <sstream>
 
 #define THREAD_NUM 12
 
