@@ -1,5 +1,3 @@
-#include "DataLoader.h"
-#include "TreeArray.h"
 #include "SimulatedAnnealing.h"
 #include <iostream>
 
@@ -20,14 +18,17 @@ int main(int argc, char *argv[])
     Config config =
         {
             .filePath = argv[1],
-            .maxIter = 100000,
-            .stallIter = 20000,
-            .T = 100,
-            .Rt = 0.95,
-            .modRate = 10000,
+            .maxIter = 5000,
+            .stallIter = 50,
+            .T = 500,
+            .Rt = 0.9,
+            .initModRate = 120,
+            .decayModRate = 0.96,
             .maxTime = 5 * 60,
             .deterministic = false,
-            .initMode = INIT_MODE::BALANCED};
+            .quiet = false,
+            // .initMode = INIT_MODE::BALANCED};
+        };
 
     cout << "Data: " << config.filePath << endl;
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);

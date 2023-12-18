@@ -1,18 +1,10 @@
 #pragma once
 #include "DataLoader.h"
 #include "TreeArray.h"
-#include "CodeLength.h"
-#include "Encoder2.h"
+#include "Encoder.h"
 #include <vector>
 
 using namespace std;
-
-enum class INIT_MODE
-{
-    BALANCED,
-    HUFFMAN,
-    FOURBIT
-};
 
 struct Config
 {
@@ -21,10 +13,11 @@ struct Config
     int stallIter;      // Maximum number of iterations without improvement
     double T;           // Initial temperature
     double Rt;          // Temperature reduction rate
-    int modRate;        // Modification rate
+    int initModRate;    // Initail modifcation rate
+    double decayModRate;   // Decay rate of modification rate
     int maxTime;        // Maximum time in seconds
     bool deterministic; // Whether to use deterministic random number generator
-    INIT_MODE initMode; // Initial code length mode
+    bool quiet;
 };
 
 struct History
@@ -38,35 +31,34 @@ struct History
     double time;
     double compress_ratio;
     double accept_prob;
+    int modRate;
 };
 
 class SimulatedAnnealing
-{
+    {
 
-public:
-    int minMaxWidth;
-    int initMaxWidth;
-    double nonCompressedWidth;
-    const int maxIter = 10;
-    double T = 1000;
-    double Rt = 0.99;
-    int modRate = 1000;
+    public:
+        int minMaxWidth;
+        int balanceWidth;
+        double initWidth;
+        const int maxIter = 10;
+        double T = 1000;
+        double Rt = 0.99;
 
-    vector<History *> history;
+        vector<History *> history;
 
-    // utility functions
-    void initCodeLength(INIT_MODE mode);
+        // utility functions
 
-public:
-    // constructor
-    SimulatedAnnealing(Config *config);
-    int run();
-    void show();
-    void show_compress_ratio();
-    void show_history();
-    Config *config;
-    DataLoader *dl;
-    CodeLength *cl;
-    vector<int> bestCodeLength;
-    Encoder2 *encoder;
-};
+    public:
+        // constructor
+        SimulatedAnnealing(Config *config);
+        int run();
+        void show();
+        void show_compress_ratio();
+        void show_history();
+        Config *config;
+        DataLoader *dl;
+        TreeArray *tree;
+        Encoder *encoder;
+        TreeArray *bestTree;
+    };
