@@ -1,5 +1,3 @@
-#include "DataLoader.h"
-#include "TreeArray.h"
 #include "SimulatedAnnealing.h"
 #include <iostream>
 
