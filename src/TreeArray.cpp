@@ -1,13 +1,16 @@
 #include "TreeArray.h"
+#include "CodeTree.h"
 #include "Constants.h"
+#include "FrequencyTable.h"
 #include <cmath>
+#include <cstdint>
+#include <vector>
 
 TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 0)
 {
     // balance tree
     if (numLeaf == SYM_NUM)
     {
-        // balance tree
         treeAry[8] = numLeaf;
         leafSet.insert(8);
     }
@@ -42,9 +45,52 @@ TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 
     }
 }
 
-TreeArray::TreeArray(const TreeArray &tree) : treeAry(tree.treeAry), prevAry(tree.prevAry), leafSet(tree.leafSet), prevLeafSet(tree.prevLeafSet)
-{
+void buildCodeLengths(const Node *node, uint32_t depth, vector<uint32_t>& codeLengths) {
+    if (dynamic_cast<const InternalNode*>(node) != nullptr) {
+        const InternalNode *internalNode = dynamic_cast<const InternalNode*>(node);
+        buildCodeLengths(internalNode->leftChild .get(), depth + 1, codeLengths);
+        buildCodeLengths(internalNode->rightChild.get(), depth + 1, codeLengths);
+    } else if (dynamic_cast<const Leaf*>(node) != nullptr) {
+        uint32_t symbol = dynamic_cast<const Leaf*>(node)->symbol;
+        if (symbol >= codeLengths.size())
+            throw std::invalid_argument("Symbol exceeds symbol limit");
+        // Note: CodeTree already has a checked constraint that disallows a symbol in multiple leaves
+        if (codeLengths.at(symbol) != 0)
+            throw std::logic_error("Assertion error: Symbol has more than one code");
+        codeLengths.at(symbol) = depth;
+    } else {
+        throw std::logic_error("Assertion error: Illegal node type");
+    }
 }
+
+vector<short> CodeLen2TreeAry(vector<uint32_t> cl)
+{
+    vector<short> tree(ARRAY_SIZE, 0);
+    for (int i = 0; i < SYM_NUM; i++)
+        tree[cl[i]]++;
+    tree[0] = 0;
+    return tree;
+}
+
+TreeArray::TreeArray(vector<freq_t> freq) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 0)
+{
+    // Huffman
+    FrequencyTable freqs(freq);
+    CodeTree codeTree = freqs.buildCodeTree();
+    vector<uint32_t> codeLengths(SYM_NUM, 0);
+    buildCodeLengths(&codeTree.root, 0, codeLengths);
+    treeAry = CodeLen2TreeAry(codeLengths);
+    if (!checkKraft())
+    {
+        cout << "Kraft!" << endl;
+        exit(1);
+    }
+    for (int i = 0; i < ARRAY_SIZE; i++)
+        if (treeAry[i] != 0)
+            leafSet.insert(i);
+}
+
+TreeArray::TreeArray(const TreeArray &tree) : treeAry(tree.treeAry), prevAry(tree.prevAry), leafSet(tree.leafSet), prevLeafSet(tree.prevLeafSet) {}
 
 vector<short> TreeArray::getCodeArray()
 {
@@ -179,11 +225,4 @@ void TreeArray::testModify(int times = 1)
         if (i % 1000 == 0)
             cout << "iter: " << i << " tree: " << *tree << endl;
     }
-}
-
-TreeArray *TreeArray::genHuffmanArray(DataLoader *DL)
-{
-    // TreeArray *tree = new TreeArray(DL->getNumInts());
-    TreeArray *tree = new TreeArray(SYM_NUM);
-    return tree;
 }

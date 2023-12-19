@@ -3,16 +3,10 @@
 #include "TreeArray.h"
 #include "CodeLength.h"
 #include "Encoder2.h"
+#include "Constants.h"
 #include <vector>
 
 using namespace std;
-
-enum class INIT_MODE
-{
-    BALANCED,
-    HUFFMAN,
-    FOURBIT
-};
 
 struct Config
 {

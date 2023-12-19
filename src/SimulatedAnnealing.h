@@ -2,6 +2,7 @@
 #include "DataLoader.h"
 #include "TreeArray.h"
 #include "Encoder.h"
+#include "Constants.h"
 #include <vector>
 
 using namespace std;
@@ -18,6 +19,7 @@ struct Config
     int maxTime;        // Maximum time in seconds
     bool deterministic; // Whether to use deterministic random number generator
     bool quiet;
+    INIT_MODE initMode; // Initial code length mode
 };
 
 struct History
@@ -48,6 +50,7 @@ class SimulatedAnnealing
         vector<History *> history;
 
         // utility functions
+        void initTree(INIT_MODE mode);
 
     public:
         // constructor

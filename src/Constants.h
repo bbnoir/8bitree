@@ -14,3 +14,11 @@
 #define ARRAY_SIZE 36
 
 #endif
+
+enum class INIT_MODE
+{
+    BALANCED,
+    HUFFMAN,
+    FOURBIT
+};
+

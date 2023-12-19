@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
             .maxTime = 30 * 60,
             .deterministic = false,
             .quiet = false,
-            // .initMode = INIT_MODE::BALANCED};
-        };
+            .initMode = INIT_MODE::HUFFMAN};
 
     cout << "Data: " << config.filePath << endl;
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
