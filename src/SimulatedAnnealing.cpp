@@ -64,7 +64,8 @@ int SimulatedAnnealing::run()
         h->newMaxWidth = newMaxWidth;
         h->compress_ratio = (initWidth - newMaxWidth) / initWidth * 100;
 
-        if (modRate < 0.1 * config->initModRate)
+        // if (modRate < 0.1 * config->initModRate)
+        if (modRate < 15)
             stall_count++;
         if (newMaxWidth < minMaxWidth) // early stop
         {
