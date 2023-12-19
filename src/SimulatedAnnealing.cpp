@@ -7,11 +7,30 @@
 
 using namespace std;
 
+void SimulatedAnnealing::initTree(INIT_MODE mode)
+{
+    switch (mode)
+    {
+    case INIT_MODE::BALANCED:
+        tree = new TreeArray(dl->getNumInts());
+        break;
+    case INIT_MODE::HUFFMAN:
+        tree = new TreeArray(dl->getFreqMap());
+        break;
+    case INIT_MODE::FOURBIT:    // not finished
+        tree = new TreeArray(dl->getNumInts());
+        break;
+    default:
+        tree = new TreeArray(dl->getNumInts());
+        break;
+    }
+}
+
 SimulatedAnnealing::SimulatedAnnealing(Config *config) : config(config), maxIter(config->maxIter), T(config->T), Rt(config->Rt), minMaxWidth(0)
 {
-    config = config;
+    this->config = config;
     dl = new DataLoader(config->filePath);
-    tree = new TreeArray(dl->getNumInts());
+    initTree(config->initMode);
     encoder = new Encoder(dl, tree);
     bestTree = new TreeArray(*tree);
     minMaxWidth = encoder->getBestWidth();

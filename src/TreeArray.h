@@ -1,18 +1,11 @@
 #pragma once
 #include "DataLoader.h"
+#include "Constants.h"
 #include <iostream>
 #include <vector>
 #include <set>
 
 using namespace std;
-
-enum class initMode
-{
-    BALANCE,
-    RANDOM,
-    HUFFMAN,
-    HALF
-};
 
 class TreeArray
 {
@@ -26,6 +19,7 @@ private:
 
 public:
     TreeArray(int numLeaf);
+    TreeArray(vector<freq_t> freq);
     TreeArray(const TreeArray &tree);
     vector<short> getCodeArray();
     friend ostream &operator<<(ostream &os, const TreeArray &tree);
@@ -34,5 +28,4 @@ public:
     void modify(int times);
     void recover();
     static void testModify(int times);
-    static TreeArray *genHuffmanArray(DataLoader *DL);
 };

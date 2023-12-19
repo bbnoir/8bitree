@@ -5,9 +5,9 @@
 
 using namespace std;
 
-typedef int8_t int8;
-typedef unsigned int freq_t;
 #define FREQ_MAX UINT32_MAX
+typedef int8_t int8;
+typedef std::uint32_t freq_t;
 typedef pair<int, int> pairInt;
 
 class DataLoader
