@@ -54,11 +54,11 @@ int SimulatedAnnealing::run()
         roundModRate = int(modRate);
         h->modRate = roundModRate;
         // tree->modify(rand() % int(modRate) + 1);
-        if (roundModRate > 10)
+        if (roundModRate > 5)
             tree->modify(roundModRate);
         else
             tree->modify(rand() % roundModRate + 1);
-        if (roundModRate > 10)
+        if (roundModRate > 5)
             modRate *= decayModRate;
         newMaxWidth = encoder->getBestWidth(); // get new energy
         h->newMaxWidth = newMaxWidth;

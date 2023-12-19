@@ -1,6 +1,6 @@
 #include "SimulatedAnnealing.h"
 #include <iostream>
-
+#include "Encoder.h"
 #include "Decoder.h"
 #include "Verification.h"
 
@@ -19,12 +19,12 @@ int main(int argc, char *argv[])
         {
             .filePath = argv[1],
             .maxIter = 5000,
-            .stallIter = 50,
-            .T = 500,
-            .Rt = 0.9,
-            .initModRate = 120,
-            .decayModRate = 0.96,
-            .maxTime = 5 * 60,
+            .stallIter = 100,
+            .T = 100,
+            .Rt = 0.95,
+            .initModRate = 30,
+            .decayModRate = 0.95,
+            .maxTime = 30 * 60,
             .deterministic = false,
             .quiet = false,
             // .initMode = INIT_MODE::BALANCED};
@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
         string decodedFileName = dataFileName.substr(0, dataFileName.find_last_of('.')) + "_decoded.bin";
 
         // encode data
-        sa->encoder->encode(encodedFileName);
+        Encoder* best_encoder = new Encoder(sa->dl, sa->bestTree);
+        best_encoder->encode(encodedFileName);
 
         // decode data
         Decoder *decoder = new Decoder(encodedFileName, decodedFileName);
@@ -59,8 +60,6 @@ int main(int argc, char *argv[])
 
         // if (!success)
         //     cout << "FAILED: verification failed" << endl;
-        cout << "max line width: " << max_line_width << endl;
-        cout << "min max line width: " << sa->minMaxWidth << endl;
         if (max_line_width != sa->minMaxWidth)
             cout << "FAILED: max line width mismatch" << endl;
 
