@@ -28,4 +28,7 @@ public:
     void modify(int times);
     void recover();
     static void testModify(int times);
+
+    // for cal limit
+    vector<uint32_t> cl;
 };

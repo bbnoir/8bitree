@@ -45,20 +45,26 @@ TreeArray::TreeArray(int numLeaf) : treeAry(ARRAY_SIZE, 0), prevAry(ARRAY_SIZE, 
     }
 }
 
-void buildCodeLengths(const Node *node, uint32_t depth, vector<uint32_t>& codeLengths) {
-    if (dynamic_cast<const InternalNode*>(node) != nullptr) {
-        const InternalNode *internalNode = dynamic_cast<const InternalNode*>(node);
-        buildCodeLengths(internalNode->leftChild .get(), depth + 1, codeLengths);
+void buildCodeLengths(const Node *node, uint32_t depth, vector<uint32_t> &codeLengths)
+{
+    if (dynamic_cast<const InternalNode *>(node) != nullptr)
+    {
+        const InternalNode *internalNode = dynamic_cast<const InternalNode *>(node);
+        buildCodeLengths(internalNode->leftChild.get(), depth + 1, codeLengths);
         buildCodeLengths(internalNode->rightChild.get(), depth + 1, codeLengths);
-    } else if (dynamic_cast<const Leaf*>(node) != nullptr) {
-        uint32_t symbol = dynamic_cast<const Leaf*>(node)->symbol;
+    }
+    else if (dynamic_cast<const Leaf *>(node) != nullptr)
+    {
+        uint32_t symbol = dynamic_cast<const Leaf *>(node)->symbol;
         if (symbol >= codeLengths.size())
             throw std::invalid_argument("Symbol exceeds symbol limit");
         // Note: CodeTree already has a checked constraint that disallows a symbol in multiple leaves
         if (codeLengths.at(symbol) != 0)
             throw std::logic_error("Assertion error: Symbol has more than one code");
         codeLengths.at(symbol) = depth;
-    } else {
+    }
+    else
+    {
         throw std::logic_error("Assertion error: Illegal node type");
     }
 }
@@ -79,6 +85,7 @@ TreeArray::TreeArray(vector<freq_t> freq) : treeAry(ARRAY_SIZE, 0), prevAry(ARRA
     CodeTree codeTree = freqs.buildCodeTree();
     vector<uint32_t> codeLengths(SYM_NUM, 0);
     buildCodeLengths(&codeTree.root, 0, codeLengths);
+    cl = codeLengths;
     treeAry = CodeLen2TreeAry(codeLengths);
     if (!checkKraft())
     {
