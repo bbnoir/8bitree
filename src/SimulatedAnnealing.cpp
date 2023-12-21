@@ -73,18 +73,18 @@ int SimulatedAnnealing::run()
         roundModRate = int(modRate);
         h->modRate = roundModRate;
         // tree->modify(rand() % int(modRate) + 1);
-        if (roundModRate > 5)
+        if (roundModRate > 16)
             tree->modify(roundModRate);
         else
             tree->modify(rand() % roundModRate + 1);
-        if (roundModRate > 5)
+        if (roundModRate > 16)
             modRate *= decayModRate;
         newMaxWidth = encoder->getBestWidth(); // get new energy
         h->newMaxWidth = newMaxWidth;
         h->compress_ratio = (initWidth - newMaxWidth) / initWidth * 100;
 
         // if (modRate < 0.1 * config->initModRate)
-        if (modRate < 15)
+        if (modRate < 20)
             stall_count++;
         if (newMaxWidth < minMaxWidth) // early stop
         {

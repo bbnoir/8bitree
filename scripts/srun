@@ -16,11 +16,11 @@ while getopts "bmsl:" opt; do
 done
 
 BIG_LIST=(
-    # "data/DLRM/DLRM_emb_19.bin"
-    # "data/DLRM/DLRM_emb_00.bin"
-    # "data/DLRM/DLRM_emb_21.bin"
-    # "data/DLRM/DLRM_emb_09.bin"
-    # "data/DLRM/DLRM_emb_20.bin"
+    "data/DLRM/DLRM_emb_19.bin"
+    "data/DLRM/DLRM_emb_00.bin"
+    "data/DLRM/DLRM_emb_21.bin"
+    "data/DLRM/DLRM_emb_09.bin"
+    "data/DLRM/DLRM_emb_20.bin"
     # "data/MT5/MT5_xl_emb.bin"
     "data/DLRM/DLRM_emb_10.bin"
     # "data/BLOOM/BLOOM_word_emb.bin"

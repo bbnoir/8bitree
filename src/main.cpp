@@ -22,11 +22,11 @@ int main(int argc, char *argv[])
             .stallIter = 100,
             .T = 100,
             .Rt = 0.95,
-            .initModRate = 30,
-            .decayModRate = 0.95,
-            .maxTime = 30 * 60,
+            .initModRate = 6000,
+            .decayModRate = 0.8,
+            .maxTime = 240 * 60,
             .deterministic = false,
-            .quiet = false,
+            .quiet = true,
             .initMode = INIT_MODE::HUFFMAN};
 
     cout << "Data: " << config.filePath << endl;
