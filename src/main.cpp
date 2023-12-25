@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
             .stallIter = 100,
             .T = 100,
             .Rt = 0.95,
-            .initModRate = 100,
+            .initModRate = 60,
             .decayModRate = 0.95,
-            .maxTime = 120 * 60,
+            .maxTime = 60 * 60,
             .deterministic = false,
             .quiet = true,
             .initMode = INIT_MODE::BALANCED};
@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
     cout << endl;
     cout << "Best tree: " << endl;
     cout << *sa->bestTree << endl;
+    cout << "Best tree max length: " << sa->bestTree->getMaxLen() << endl;
+    cout << "Best tree min length: " << sa->bestTree->getMinLen() << endl;
 
     // verify
     if (argc >= 3 && string(argv[2]) == "verify")

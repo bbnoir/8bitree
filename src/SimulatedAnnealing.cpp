@@ -43,7 +43,7 @@ bool accept(int newMaxWidth, int MaxWidth, double initWidth, double T)
     if (newMaxWidth < MaxWidth)
         return true;
     else if (newMaxWidth == MaxWidth)
-        return (double)rand() / RAND_MAX < 0.5;
+        return (double)rand() / RAND_MAX < 0.4;
     else if (exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) > (double)rand() / RAND_MAX)
         return true;
     else
@@ -168,14 +168,6 @@ void SimulatedAnnealing::show()
 void SimulatedAnnealing::show_compress_ratio()
 {
     cout << "Integers used: " << dl->getNumInts() << "/256" << endl;
-    cout << "Assignment mode: ";
-    int bestWay = encoder->getBestWay();
-    if (bestWay == FQ)
-        cout << "FQ" << endl;
-    else if (bestWay == EX)
-        cout << "EX" << endl;
-    else if (bestWay == OC)
-        cout << "OC" << endl;
     cout << "Initial row width: " << initWidth << endl;
     cout << "Balance row width: " << balanceWidth << endl;
     cout << "Compression ratio: " << fixed << setprecision(2) << (initWidth - balanceWidth) / initWidth * 100 << "%" << endl;
