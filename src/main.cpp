@@ -4,7 +4,7 @@
 #include "Decoder.h"
 #include "Verification.h"
 
-using namespace std;
+using std::cout;
 
 int main(int argc, char *argv[])
 {
@@ -22,19 +22,25 @@ int main(int argc, char *argv[])
             .stallIter = 100,
             .T = 100,
             .Rt = 0.95,
-            .initModRate = 6000,
-            .decayModRate = 0.8,
-            .maxTime = 240 * 60,
+            .initModRate = 100,
+            .decayModRate = 0.95,
+            .maxTime = 120 * 60,
             .deterministic = false,
             .quiet = true,
-            .initMode = INIT_MODE::HUFFMAN};
+            .initMode = INIT_MODE::BALANCED};
 
-    cout << "Data: " << config.filePath << endl;
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
+    cout << "Data: " << config.filePath << endl;
     sa->run();
     // sa->show();
-    sa->show_history();
+    // sa->show_history();
+    cout << endl;
+    sa->show_plot_info();
+    cout << endl;
     sa->show_compress_ratio();
+    cout << endl;
+    cout << "Best tree: " << endl;
+    cout << *sa->bestTree << endl;
 
     // verify
     if (argc >= 3 && string(argv[2]) == "verify")

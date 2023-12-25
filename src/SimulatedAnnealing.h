@@ -34,6 +34,10 @@ struct History
     double compress_ratio;
     double accept_prob;
     int modRate;
+    int maxLen;
+    int minLen;
+    int maxLenOfBest;
+    int minLenOfBest;
 };
 
 class SimulatedAnnealing
@@ -59,6 +63,7 @@ class SimulatedAnnealing
         void show();
         void show_compress_ratio();
         void show_history();
+        void show_plot_info();
         Config *config;
         DataLoader *dl;
         TreeArray *tree;

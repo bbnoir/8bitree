@@ -226,3 +226,19 @@ void TreeArray::testModify(int times = 1)
             cout << "iter: " << i << " tree: " << *tree << endl;
     }
 }
+
+int TreeArray::getMaxLen()
+{
+    int maxLen = ARRAY_SIZE - 1;
+    while (treeAry[maxLen] == 0)
+        maxLen--;
+    return maxLen;
+}
+
+int TreeArray::getMinLen()
+{
+    int minLen = 0;
+    while (treeAry[minLen] == 0)
+        minLen++;
+    return minLen;
+}

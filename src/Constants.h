@@ -5,7 +5,7 @@
 #define SYM_MIN -128 // min value of int8_t
 #define SYM_MAX 127  // max value of int8_t
 #define SYM_NUM 256
-#define ARRAY_SIZE 36
+#define ARRAY_SIZE 50
 
 #elif BIT_NUM == 4
 #define SYM_MIN -8 // min value of int4_t

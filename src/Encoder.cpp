@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <bitset>
 
-#define THREAD_NUM 12
+#define THREAD_NUM 8
 
 using namespace std;
 

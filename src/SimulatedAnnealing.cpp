@@ -42,6 +42,8 @@ bool accept(int newMaxWidth, int MaxWidth, double initWidth, double T)
 {
     if (newMaxWidth < MaxWidth)
         return true;
+    else if (newMaxWidth == MaxWidth)
+        return (double)rand() / RAND_MAX < 0.5;
     else if (exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) > (double)rand() / RAND_MAX)
         return true;
     else
@@ -73,18 +75,18 @@ int SimulatedAnnealing::run()
         roundModRate = int(modRate);
         h->modRate = roundModRate;
         // tree->modify(rand() % int(modRate) + 1);
-        if (roundModRate > 16)
+        if (roundModRate > 5)
             tree->modify(roundModRate);
         else
             tree->modify(rand() % roundModRate + 1);
-        if (roundModRate > 16)
+        if (roundModRate > 5)
             modRate *= decayModRate;
         newMaxWidth = encoder->getBestWidth(); // get new energy
         h->newMaxWidth = newMaxWidth;
         h->compress_ratio = (initWidth - newMaxWidth) / initWidth * 100;
 
         // if (modRate < 0.1 * config->initModRate)
-        if (modRate < 20)
+        if (modRate < 15)
             stall_count++;
         if (newMaxWidth < minMaxWidth) // early stop
         {
@@ -92,6 +94,10 @@ int SimulatedAnnealing::run()
             delete bestTree;
             bestTree = new TreeArray(*tree);
         }
+        h->maxLen = tree->getMaxLen();
+        h->minLen = tree->getMinLen();
+        h->maxLenOfBest = bestTree->getMaxLen();
+        h->minLenOfBest = bestTree->getMinLen();
         h->minMaxWidth = minMaxWidth;
         h->accept_prob = exp((MaxWidth - newMaxWidth) / initWidth * 10000 / T) * 100;
         if (h->accept_prob > 100)
@@ -192,4 +198,16 @@ void SimulatedAnnealing::show_history()
         cout << fixed << setprecision(2) << h->compress_ratio << "%" << endl;
     }
     cout << "===========================================================================================" << endl;
+}
+
+void SimulatedAnnealing::show_plot_info()
+{
+   cout << "Iter\tMaxLen\tMinLen\tMaxLenB\tMinLenB\tCompress(%)\tBestCompress(%)" << endl;
+    for (auto h : history)
+    {
+        cout << h->iter << "\t" << h->maxLen << "\t" << h->minLen << "\t";
+        cout << h->maxLenOfBest << "\t" << h->minLenOfBest << "\t";
+        cout << fixed << setprecision(2) << h->compress_ratio << "\t";
+        cout << fixed << setprecision(2) << (initWidth - h->minMaxWidth) / initWidth * 100 << endl;
+    }
 }

@@ -24,6 +24,9 @@ public:
     vector<short> getCodeArray();
     friend ostream &operator<<(ostream &os, const TreeArray &tree);
 
+    int getMaxLen();
+    int getMinLen();
+
     // for modify
     void modify(int times);
     void recover();
