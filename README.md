@@ -1,5 +1,5 @@
 # 8bitree
-Enhanced lossless compression algorithm for substantial deep learning models.
+Lossless Compression Techniques for Embedding Tables in Substantial Deep Learning-Based Recommendation System
 
 ## Usage
 
