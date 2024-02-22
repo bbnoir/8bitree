@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     SimulatedAnnealing *sa = new SimulatedAnnealing(&config);
     cout << "Data: " << config.filePath << endl;
     sa->run();
+    // uncomment to show history
     // sa->show();
     // sa->show_history();
     cout << endl;
@@ -62,11 +63,8 @@ int main(int argc, char *argv[])
         delete decoder;
 
         // verify
-        // bool success = verify_bin_quiet(sa->dl, decodedFileName);
         bool success = verify_bin(sa->dl, decodedFileName);
 
-        // if (!success)
-        //     cout << "FAILED: verification failed" << endl;
         if (max_line_width != sa->minMaxWidth)
             cout << "FAILED: max line width mismatch" << endl;
 
